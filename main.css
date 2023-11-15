@@ -13,7 +13,7 @@ textarea {
 
 body {
     text-align: center;
-    background: #222
+    background: lightblue
 }
 
 fieldset {
@@ -26,7 +26,7 @@ fieldset {
     text-align: left;
     border: 1px solid grey;
     padding: 20px;
-    background: #eee
+    background: white
 }
 
 div.blog_post h2 a,div#header h1 a {
@@ -80,7 +80,7 @@ ul#menu li a:hover {
 }
 
 div#all_blogs {
-    border: 2px solid grey;
+    border: 2px solid darkblue;
     padding: 0 10px 10px
 }
 

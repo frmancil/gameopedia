@@ -43,11 +43,15 @@ $system = $resultSystem->fetch();
 
 <head>
     <meta charset="utf-8">
-    <title>Gameopedia - <?= $game['name'] ?></title>
+    <title>Gameopedia - Home Page</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="./logo.png">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="main.css" type="text/css">
 </head>
 
 <body>
+    <?php include 'navigation.php'?>
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
