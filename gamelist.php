@@ -1,10 +1,18 @@
 <?php
 
+use voku\helper\Paginator;
+
+// include the composer-autoloader
+require_once __DIR__ . '/vendor/autoload.php';
+
+// create new object pass in number of pages and identifier
+$pages = new Paginator(3, 'p');
+
 require('connect.php');
 
 //Get game data
 //Select statement to look for the specific post
-$query = "SELECT * FROM games ORDER BY date_added DESC LIMIT 5";
+$query = "SELECT COUNT(*) FROM games";
 //PDO Preparation
 $result = $db->prepare($query);
 //Sanitize id to secure it's a number
@@ -13,6 +21,20 @@ $result = $db->prepare($query);
 //$result->bindValue('id', $id, PDO::PARAM_INT);
 $result->execute();
 //Fetch the selected row
+$count = $result->fetch();
+
+// get number of total records
+$rowCount = $count[0];
+
+// pass number of records to
+$pages->set_total($rowCount);
+
+$data = $db->query('SELECT * FROM games ' . $pages->get_limit());
+
+$games=array();
+foreach($data as $row) {
+  array_push($games, $row);
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,13 +54,12 @@ $result->execute();
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
-                <?php while ($game = $result->fetch()) : ?>
-                <div class="blog_post">
+                <?php foreach($games as $game): ?>
                     <h2><a href="game.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>
-                    </div>
-                <?php endwhile ?>
+                <?php endforeach ?>
             </div>
         </div>
+        <p><?php echo $pages->page_links(); ?></p>
     </div>
 </body>
 

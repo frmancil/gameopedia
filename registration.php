@@ -1,5 +1,19 @@
 <?php
 
+//Import the PHPMailer class into the global namespace
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+
+require './vendor/autoload.php';
+$mail = new PHPMailer();
+$mail->isSMTP();
+$mail->SMTPDebug = SMTP::DEBUG_SERVER;
+$mail->Host = 'smtp-relay.brevo.com';
+$mail->Port = 587;
+$mail->SMTPAuth = true;
+$mail->Username = 'frmancil@gmail.com';
+$mail->Password = 'g3YhKFNDcAWbtBOm';
+
 require('connect.php');
 
 if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repassword']) && !empty($_POST['repassword'])){
@@ -21,20 +35,29 @@ if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repa
         $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-        
+        $validationCode = random_int(100000, 999999);
         //Query to update the values and bind parameters
         $insert_query = "INSERT INTO users (username, password, email, role, is_verified, verification_code) VALUES (:username, :password, :email, 'USER', false, :code)";
         $insert = $db->prepare($insert_query);
         $insert->bindValue(':username', $username);
         $insert->bindValue(':password', $password);
         $insert->bindValue(':email', $email);
-        $insert->bindValue(':code', random_int(100000, 999999));
+        $insert->bindValue(':code', $validationCode);
         
         //  Execute the insert
         if($insert->execute()){
-            echo "Success";
-            header("location:login.php");
-            exit;
+            echo 'Success';
+            $mail->setFrom('register@gameopedia.com', 'Game-O-Pedia');
+            $mail->addAddress($email, $username);
+            $mail->Subject = 'Game-O-Pedia validation code';
+            $mail->Body = 'Validation code: ' . $validationCode;
+            if (!$mail->send()) {
+    			echo 'Mailer Error: ' . $mail->ErrorInfo;
+				} else {
+   				echo 'Message sent!';
+   				header("location:login.php");
+            	exit;
+			}
         }
 
     } else if($_POST) {

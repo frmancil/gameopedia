@@ -4,40 +4,38 @@ require('connect.php');
 
 //Get game data
 //Select statement to look for the specific post
-$query = "SELECT * FROM games where id = 23";
+$queryGame = "SELECT * FROM games where id = :id";
 //PDO Preparation
-$result = $db->prepare($query);
+$resultGame = $db->prepare($queryGame);
 //Sanitize id to secure it's a number
-//$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 //Bind the parameter in the query to the variable
-//$result->bindValue('id', $id, PDO::PARAM_INT);
-$result->execute();
+$resultGame->bindValue(':id', $id);
+$resultGame->execute();
 //Fetch the selected row
-$game = $result->fetch();
+$game = $resultGame->fetch();
+
+//Get game image
+$queryCover = "SELECT * FROM game_system where game_id = :game_id";
+//PDO Preparation
+$resultCover = $db->prepare($queryCover);
+//Sanitize id to secure it's a number
+//Bind the parameter in the query to the variable
+$resultCover->bindValue(':game_id', $game['id']);
+$resultCover->execute();
+//Fetch the selected row
+$cover = $resultCover->fetch();
 
 //Get game system
-$system = "SELECT * FROM system where id = 5";
+$system = "SELECT * FROM system where id = :system_id";
 //PDO Preparation
 $resultSystem = $db->prepare($system);
 //Sanitize id to secure it's a number
-//$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 //Bind the parameter in the query to the variable
-//$result->bindValue('id', $id, PDO::PARAM_INT);
+$resultSystem->bindValue(':system_id', $cover['system_id']);
 $resultSystem->execute();
 //Fetch the selected row
-$systemResult = $resultSystem->fetch();
-
-//Get game image
-$image = "SELECT * FROM game_system where game_id = 23 and system_id = 5";
-//PDO Preparation
-$resultImage = $db->prepare($image);
-//Sanitize id to secure it's a number
-//$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-//Bind the parameter in the query to the variable
-//$result->bindValue('id', $id, PDO::PARAM_INT);
-$resultImage->execute();
-//Fetch the selected row
-$imageResult = $resultImage->fetch();
+$system = $resultSystem->fetch();
 ?>
 
 <!DOCTYPE html>
@@ -60,8 +58,8 @@ $imageResult = $resultImage->fetch();
                 <h2><?= $game['name'] ?></h2>
                 <div class="blog_content">
                     <?= $game['description'] ?>
-                        <img id="logo" src="./logos/<?php echo $systemResult['logo_location']; ?>">
-                        <img id="cover" src="./covers/<?php echo $imageResult['cover_location']; ?>">
+                        <img id="logo" src="./logos/<?php echo $system['logo_location']; ?>">
+                        <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
                 </div>
             </div>
         </div>
