@@ -19,8 +19,8 @@ require('connect.php');
                     $_SESSION['username'] = $userResult['username'];
                     $_SESSION['role'] = $userResult['role'];
                     $_SESSION['verified'] = $userResult['is_verified'];
-                    $_SESSION['logged_in'] = true;
                     if($_SESSION['verified'] == true){
+                        $_SESSION['logged_in'] = true;
                         header("location:index.php");
                     } else {
                         header("location:verification.php");

@@ -51,6 +51,14 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
     <link rel="icon" type="image/x-icon" href="./logo.png">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="main.css" type="text/css">
+    <script src="./vendor/tinymce/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+      tinymce.init({
+        selector: '#description',
+        height: 300,
+        resize: false
+      });
+    </script>
 </head>
 
 <body>
@@ -70,11 +78,11 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                     </p>
                     <p>
                         <label for="publisher">Publisher</label>
-                        <textarea name="publisher" id="publisher"></textarea>
+                        <input name="publisher" id="publisher"></textarea>
                     </p>
                     <p>
                         <label for="year">Year</label>
-                        <textarea name="year" id="year"></textarea>
+                        <input name="year" id="year"></textarea>
                     </p>
                     <p>
                         <input type="submit" name="command" value="Create">
