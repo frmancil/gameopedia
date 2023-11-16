@@ -30,6 +30,7 @@
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-sm-6">
+                            	<label>Are you sure you want to logout?</label>
                             	<input type="submit" class="btn btn-control btn-outline-info btn-block col-sm-4" name="logout" id="logout" value="Logout">
                             </div>
                         </div>
