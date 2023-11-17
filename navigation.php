@@ -17,9 +17,6 @@
                             <a class="nav-link link-success" href="index.php">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link link-primary" href="game.php">Game</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link link-primary" href="gamelist.php">Game List</a>
                         </li>
                         <li class="nav-item">
@@ -33,9 +30,6 @@
                             <a class="nav-link link-success" href="index.php">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link link-primary" href="game.php">Game</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link link-primary" href="gamelist.php">Game List</a>
                         </li>
                         <li class="nav-item">
@@ -46,9 +40,6 @@
                 <?php if (!isset($_SESSION['logged_in'])): ?>
                 <li class="nav-item">
                     <a class="nav-link link-success" href="index.php">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link link-primary" href="game.php">Game</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link link-primary" href="gamelist.php">Game List</a>

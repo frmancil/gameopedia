@@ -48,6 +48,19 @@ $system = $resultSystem->fetch();
     <link rel="icon" type="image/x-icon" href="./logo.png">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="main.css" type="text/css">
+    <script src="./vendor/tinymce/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+      tinymce.init({
+        selector: "textarea",
+        plugins: "table code",
+        toolbar: "code",
+        menubar: false,
+        noneditable_class: 'nonedit',
+        editable_class: 'editcontent',
+        min_height: 380,
+        resize: false
+      });
+    </script>
 </head>
 
 <body>
@@ -57,7 +70,7 @@ $system = $resultSystem->fetch();
             <div class="blog_post">
                 <h2><?= $game['name'] ?></h2>
                 <div class="blog_content">
-                    <?= $game['description'] ?>
+                    <textarea name="description" id="description" class="nonedit"><?= $game['description'] ?></textarea>
                         <img id="logo" src="./logos/<?php echo $system['logo_location']; ?>">
                         <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
                 </div>
