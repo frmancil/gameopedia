@@ -100,7 +100,7 @@ $system = $resultSystem->fetch();
     <div id="wrapper">
         <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
-            <form action="edit.php" method="post">
+            <form action="delete.php" method="post">
                 <fieldset>
             <div class="blog_post">
                 <h2><?= $game['name'] ?></h2>
