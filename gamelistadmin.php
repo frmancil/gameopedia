@@ -6,13 +6,13 @@ use voku\helper\Paginator;
 require_once __DIR__ . '/vendor/autoload.php';
 
 // create new object pass in number of pages and identifier
-$pages = new Paginator(3, 'p');
+$pages = new Paginator(5, 'p');
 
 require('connect.php');
 
 //Get game data
 //Select statement to look for the specific post
-$query = "SELECT COUNT(*) FROM games WHERE is_visible = TRUE";
+$query = "SELECT COUNT(*) FROM games";
 //PDO Preparation
 $result = $db->prepare($query);
 //Sanitize id to secure it's a number
@@ -29,7 +29,7 @@ $rowCount = $count[0];
 // pass number of records to
 $pages->set_total($rowCount);
 
-$data = $db->query('SELECT * FROM games WHERE is_visible = TRUE' . $pages->get_limit());
+$data = $db->query('SELECT * FROM games' . $pages->get_limit());
 
 $games=array();
 foreach($data as $row) {
@@ -55,7 +55,7 @@ foreach($data as $row) {
         <div id="all_blogs">
             <div class="blog_post">
                 <?php foreach($games as $game): ?>
-                    <h2><a href="game.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>
+                    <h2><a href="edit.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>
                 <?php endforeach ?>
             </div>
         </div>

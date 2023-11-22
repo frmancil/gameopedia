@@ -17,7 +17,7 @@
                             <a class="nav-link link-success" href="index.php">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link link-primary" href="gamelist.php">Game List</a>
+                            <a class="nav-link link-primary" href="gamelistadmin.php">Game List</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link link-primary" href="newgame.php">New Game</a>

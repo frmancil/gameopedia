@@ -2,15 +2,47 @@
 
 require('connect.php');
 
+if(isset($_POST['Delete'])){
+    //Sanitize id to secure it's a number
+    $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+    $delete_query = "UPDATE games SET is_visible = false WHERE id = :id";
+    $delete = $db->prepare($delete_query);
+    $delete->bindValue(':id', $id);
+
+    //Execute the update
+    $delete->execute();
+
+    //Redirect to the page with the new information
+    header("Location: gamelistadmin.php");
+    exit;
+}
+
+
+
+if(isset($_POST['Undelete'])){
+    //Sanitize id to secure it's a number
+    $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+    $delete_query = "UPDATE games SET is_visible = true WHERE id = :id";
+    $delete = $db->prepare($delete_query);
+    $delete->bindValue(':id', $id);
+
+    //Execute the update
+    $delete->execute();
+
+    //Redirect to the page with the new information
+    header("Location: gamelistadmin.php");
+    exit;
+}
+
 //Get game data
 //Select statement to look for the specific post
-$queryGame = "SELECT * FROM games WHERE is_visible = TRUE ORDER BY RAND() LIMIT 1";
+$queryGame = "SELECT * FROM games where id = :id";
 //PDO Preparation
 $resultGame = $db->prepare($queryGame);
 //Sanitize id to secure it's a number
-//$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 //Bind the parameter in the query to the variable
-//$result->bindValue('id', $id, PDO::PARAM_INT);
+$resultGame->bindValue(':id', $id);
 $resultGame->execute();
 //Fetch the selected row
 $game = $resultGame->fetch();
@@ -43,7 +75,7 @@ $system = $resultSystem->fetch();
 
 <head>
     <meta charset="utf-8">
-    <title>Gameopedia - Home Page</title>
+    <title>Gameopedia - <?= $game['name'] ?></title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="./logo.png">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
@@ -66,7 +98,10 @@ $system = $resultSystem->fetch();
 <body>
     <?php include 'navigation.php'?>
     <div id="wrapper">
+        <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
+            <form action="edit.php" method="post">
+                <fieldset>
             <div class="blog_post">
                 <h2><?= $game['name'] ?></h2>
                 <div class="blog_content">
@@ -74,7 +109,15 @@ $system = $resultSystem->fetch();
                         <img id="logo" src="./logos/<?php echo $system['logo_location']; ?>">
                         <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
                 </div>
+                    <input type="hidden" name="id" id="id" value="<?php echo $game['id'] ?>" />
+                    <?php if($game['is_visible'] == true): ?>
+                        <input type="submit" name="Delete" value="Delete">
+                    <?php else: ?>
+                        <input type="submit" name="Undelete" value="Undelete">
+                    <?php endif ?>
             </div>
+           </fieldset> 
+        </form>
         </div>
     </div>
 </body>
