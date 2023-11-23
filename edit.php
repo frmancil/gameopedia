@@ -2,14 +2,40 @@
 
 require('connect.php');
 
-$query = "SELECT * FROM publisher WHERE is_visible = true";
+//Get game data
+//Select statement to look for the specific post
+$queryGame = "SELECT * FROM games where id = :id";
 //PDO Preparation
-$publisherSearch = $db->prepare($query);
+$resultGame = $db->prepare($queryGame);
 //Sanitize id to secure it's a number
-//$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 //Bind the parameter in the query to the variable
-//$result->bindValue('id', $id, PDO::PARAM_INT);
-$publisherSearch->execute();
+$resultGame->bindValue(':id', $id);
+$resultGame->execute();
+//Fetch the selected row
+$game = $resultGame->fetch();
+
+//Get game image
+$queryCover = "SELECT * FROM game_system where game_id = :game_id";
+//PDO Preparation
+$resultCover = $db->prepare($queryCover);
+//Sanitize id to secure it's a number
+//Bind the parameter in the query to the variable
+$resultCover->bindValue(':game_id', $game['id']);
+$resultCover->execute();
+//Fetch the selected row
+$cover = $resultCover->fetch();
+
+//Get game system
+$system = "SELECT * FROM system where id = :system_id";
+//PDO Preparation
+$resultSystem = $db->prepare($system);
+//Sanitize id to secure it's a number
+//Bind the parameter in the query to the variable
+$resultSystem->bindValue(':system_id', $cover['system_id']);
+$resultSystem->execute();
+//Fetch the selected row
+$system = $resultSystem->fetch();
 
 if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['description']) 
     && !empty($_POST['description']) && isset($_POST['publisher']) && !empty($_POST['publisher']) && isset($_POST['year']) && !empty($_POST['year'])) {
@@ -18,33 +44,25 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
         $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $publisher = filter_input(INPUT_POST, 'publisher', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $year = filter_input(INPUT_POST, 'year', FILTER_SANITIZE_NUMBER_INT);
+        $update_id = filter_input(INPUT_POST, 'gameid', FILTER_SANITIZE_NUMBER_INT);
         
         //Query to update the values and bind parameters
-        $insert_query = "INSERT INTO games (name, description, publisher, year) VALUES (:name, :description, :publisher, :year)";
+        $insert_query = "UPDATE games SET name =:name, description =:description, publisher =:publisher, year =:year WHERE id = :gameid";
         $insert = $db->prepare($insert_query);
         $insert->bindValue(':name', $name);
         $insert->bindValue(':description', $description);
         $insert->bindValue(':publisher', $publisher);
         $insert->bindValue(':year', $year);
-        
-        //  Execute the insert
-        if($insert->execute()){
-            $last_id = $db->lastInsertId();
-            $insert_gs = "INSERT INTO game_system (game_id, system_id, cover_location) VALUES (:game_id, :system_id, :cover_location)";
-            $insert_gs = $db->prepare($insert_gs);
-            $insert_gs->bindValue(':game_id', $last_id);
-            $insert_gs->bindValue(':system_id', 5);
-            $insert_gs->bindValue(':cover_location', $last_id . '-' . 5 . '.jpg');
-            $insert_gs->execute();
+        $insert->bindValue(':gameid', $update_id);
 
-            echo "Success";
-            header("Location: index.php");
-            exit;
-        }
+        $insert->execute();
+
+        header("Location: gamelistadmin.php");
+        exit;
 
     } else if($_POST) {
         $id = false;
-        echo 'PLEASE ADD TITLE AND CONTENT TO THE POST';
+        echo 'PLEASE ADD CONTENT TO THE GAME';
         exit;
     }
 
@@ -73,38 +91,30 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
 <body>
     <?php include 'navigation.php'?>
     <div id="wrapper">
+        <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
-            <form action="newgame.php" method="post">
+            <form action="edit.php" method="post">
                 <fieldset>
-                    <legend>New Game</legend>
+                    <legend>Edit</legend>
+                    <input type="hidden" name="gameid" id="gameid" value="<?php echo $game['id'] ?>" />
                     <p>
-                        <label for="name">Name</label>
-                        <input name="name" id="name">
+                        <label for="name">Game Name</label>
+                        <input name="name" id="name" value="<?= $game['name'] ?>"></input>
                     </p>
                     <p>
                         <label for="description">Description</label>
-                        <textarea name="description" id="description"></textarea>
+                        <textarea name="description" id="description"><?= $game['description'] ?></textarea>
                     </p>
                     <p>
-
-            <select>
-                            <?php while ($post = $publisherSearch->fetch()) : ?>
-
-                <option value="<?= $post['id'] ?>"><?= $post['name'] ?></option>
-                            <?php endwhile ?>
-            </select>
-
-
-
                         <label for="publisher">Publisher</label>
-                        <input name="publisher" id="publisher"></textarea>
+                        <input name="publisher" id="publisher" value="<?= $game['publisher'] ?>"></input>
                     </p>
                     <p>
                         <label for="year">Year</label>
-                        <input name="year" id="year"></textarea>
+                        <input name="year" id="year" value="<?= $game['year'] ?>"></input>
                     </p>
                     <p>
-                        <input type="submit" name="command" value="Create">
+                        <input type="submit" name="command" value="Edit">
                     </p>
                 </fieldset>
             </form>
