@@ -17,6 +17,7 @@ require('connect.php');
                 if(password_verify($_POST['password'], $userResult['password'])){
                     session_start();
                     $_SESSION['username'] = $userResult['username'];
+                    $_SESSION['id'] = $userResult['id'];
                     $_SESSION['role'] = $userResult['role'];
                     $_SESSION['verified'] = $userResult['is_verified'];
                     if($_SESSION['verified'] == true){
