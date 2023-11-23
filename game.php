@@ -162,6 +162,7 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                     <?php endif ?>
                 <?php endif ?>
             </div>
+            <p><?php echo $pages->page_links('?' . 'id=' . $game['id'] . '&'); ?></p>
         </div>
     </div>
 </body>
