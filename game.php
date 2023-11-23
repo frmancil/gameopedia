@@ -64,7 +64,7 @@ $rowCountPost = $count[0];
 // pass number of records to
 $pages->set_total($rowCountPost);
 
-$data = $db->query('SELECT posts.post, users.username, posts.date FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' AND is_visible = TRUE' . $pages->get_limit());
+$data = $db->query('SELECT posts.post, users.username, posts.date FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' AND is_visible = TRUE ORDER BY date DESC' . $pages->get_limit());
 
 $posts=array();
 foreach($data as $row) {
@@ -112,14 +112,17 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
     <script src="./vendor/tinymce/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
       tinymce.init({
-        selector: "textarea",
-        plugins: "table code",
+        selector: "textarea#description",
+        plugins: "table",
         toolbar: "code",
         menubar: false,
         noneditable_class: 'nonedit',
         editable_class: 'editcontent',
         min_height: 380,
-        resize: false
+        resize: false,
+        branding: false,
+        menubar: false,
+        readonly: true
       });
     </script>
 </head>
@@ -152,10 +155,10 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                                 <input type="hidden" name="userid" id="userid" value="<?php echo $_SESSION['id'] ?>" />
                             <p>
                                 <label for="post">Post a Comment</label>
-                                <textarea name="post" id="post"></textarea>
+                                <textarea name="post" id="post" maxlength="1000"></textarea>
                             </p>
                             <p>
-                                <input type="submit" name="command" value="Create">
+                                <input type="submit" name="command" value="Post">
                             </p>
                             </fieldset>
                         </form>

@@ -52,13 +52,16 @@ $system = $resultSystem->fetch();
     <script>
       tinymce.init({
         selector: "textarea",
-        plugins: "table code",
+        plugins: "table",
         toolbar: "code",
         menubar: false,
         noneditable_class: 'nonedit',
         editable_class: 'editcontent',
         min_height: 380,
-        resize: false
+        resize: false,
+        branding: false,
+        menubar: false,
+        readonly: true
       });
     </script>
 </head>
