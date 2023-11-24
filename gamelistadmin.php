@@ -16,9 +16,6 @@ $query = "SELECT COUNT(*) FROM games";
 //PDO Preparation
 $result = $db->prepare($query);
 //Sanitize id to secure it's a number
-//$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-//Bind the parameter in the query to the variable
-//$result->bindValue('id', $id, PDO::PARAM_INT);
 $result->execute();
 //Fetch the selected row
 $count = $result->fetch();
@@ -56,7 +53,7 @@ foreach($data as $row) {
             <div class="blog_post">
                 <?php foreach($games as $game): ?>
                     <h2><a href="delete.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>
-                    <a href="edit.php?id=<?= $game['id'] ?>"> Edit </a>
+                    <a href="edit.php?id=<?= $game['id'] ?>"> Edit </a> 
                   <!--  <h2><a href="upload.php?id=<?= $game['id'] ?>"> Add Cover </a></h2> -->
                 <?php endforeach ?>
             </div>

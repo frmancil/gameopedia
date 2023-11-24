@@ -30,11 +30,10 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
         //  Execute the insert
         if($insert->execute()){
             $last_id = $db->lastInsertId();
-            $insert_gs = "INSERT INTO game_system (game_id, system_id, cover_location) VALUES (:game_id, :system_id, :cover_location)";
+            $insert_gs = "INSERT INTO game_system (game_id, system_id) VALUES (:game_id, :system_id)";
             $insert_gs = $db->prepare($insert_gs);
             $insert_gs->bindValue(':game_id', $last_id);
             $insert_gs->bindValue(':system_id', 5);
-            $insert_gs->bindValue(':cover_location', $last_id . '-' . 5 . '.jpg');
             $insert_gs->execute();
 
             echo "Success";
@@ -44,8 +43,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
 
     } else if($_POST) {
         $id = false;
-        echo 'PLEASE ADD TITLE AND CONTENT TO THE POST';
-        exit;
+        echo 'PLEASE ADD GAME INFORMATION';
     }
 
 ?>

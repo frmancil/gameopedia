@@ -75,7 +75,9 @@ $system = $resultSystem->fetch();
                 <div class="blog_content">
                     <textarea name="description" id="description" class="nonedit"><?= $game['description'] ?></textarea>
                         <img id="logo" src="./logos/<?php echo $system['logo_location']; ?>">
-                        <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
+                        <?php if($cover['cover_location']): ?>
+                            <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
+                        <?php endif ?>
                 </div>
             </div>
         </div>
