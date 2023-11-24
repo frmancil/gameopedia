@@ -75,7 +75,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
     <?php include 'navigation.php'?>
     <div id="wrapper">
         <div id="all_blogs">
-            <form action="newgame.php" method="post" enctype="multipart/form-data">
+            <form action="newgame.php" method="post">
                 <fieldset>
                     <legend>New Game</legend>
                     <p>

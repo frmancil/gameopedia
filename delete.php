@@ -41,36 +41,38 @@ if(isset($_POST['Undelete'])){
 
 if(isset($_POST['HidePost'])){
     //Sanitize id to secure it's a number
-    $postid = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
+    /*$postid = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
     $delete_query = "UPDATE posts SET is_visible = false WHERE id = :id";
     $delete = $db->prepare($delete_query);
     $delete->bindValue(':id', $postid);
-    $gamePost = 'id';
 
     //Execute the update
     $delete->execute();
 
     //Redirect to the page with the new information
-    header("Location: gamelistadmin.php");
-    exit;
+    header("Location: delete.php?id=" . $_POST['id']);
+    exit;*/
+
+    echo $post['id'];
 }
 
 
 
 if(isset($_POST['UnhidePost'])){
     //Sanitize id to secure it's a number
-    $postid = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
+   /* $postid = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
     $delete_query = "UPDATE posts SET is_visible = true WHERE id = :id";
     $delete = $db->prepare($delete_query);
     $delete->bindValue(':id', $postid);
-    $gamePost = 'id';
 
     //Execute the update
     $delete->execute();
 
     //Redirect to the page with the new information
-    header("Location: gamelistadmin.php");
-    exit;
+    header("Location: delete.php?id=" . $_POST['id']);
+    exit;*/
+
+    echo $post['id'];
 }
 
 //Get game data
@@ -199,7 +201,7 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
         <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
             <form action="delete.php" method="post">
-                                  <input type="hidden" name="id" id="id" value="<?php echo $game['id'] ?>" />
+                <input type="hidden" name="id" id="id" value="<?php echo $game['id'] ?>" />
                 <fieldset>
             <div class="blog_post">
                 <h2><?= $game['name'] ?></h2>

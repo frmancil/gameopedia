@@ -12,7 +12,7 @@ require('connect.php');
 
 //Get game data
 //Select statement to look for the specific post
-$query = "SELECT COUNT(*) FROM users";
+$query = "SELECT COUNT(*) FROM publisher";
 //PDO Preparation
 $result = $db->prepare($query);
 //Sanitize id to secure it's a number
@@ -29,11 +29,11 @@ $rowCount = $count[0];
 // pass number of records to
 $pages->set_total($rowCount);
 
-$data = $db->query('SELECT * FROM users' . $pages->get_limit());
+$data = $db->query('SELECT * FROM publisher' . $pages->get_limit());
 
-$users=array();
+$publishers=array();
 foreach($data as $row) {
-  array_push($users, $row);
+  array_push($publishers, $row);
 }
 ?>
 
@@ -42,7 +42,7 @@ foreach($data as $row) {
 
 <head>
     <meta charset="utf-8">
-    <title>Gameopedia - User List</title>
+    <title>Gameopedia - Publisher List</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="./logo.png">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
@@ -54,8 +54,8 @@ foreach($data as $row) {
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
-                <?php foreach($users as $user): ?>
-                    <h2><a href="useredit.php?id=<?= $user['id'] ?>"><?= $user['username'] ?></a></h2>
+                <?php foreach($publishers as $publisher): ?>
+                    <h2><a href="publisheredit.php?id=<?= $publisher['id'] ?>"><?= $publisher['name'] ?></a></h2>
                 <?php endforeach ?>
             </div>
         </div>
