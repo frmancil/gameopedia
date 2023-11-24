@@ -52,8 +52,7 @@ if(isset($_POST['HidePost'])){
     //Redirect to the page with the new information
     header("Location: delete.php?id=" . $_POST['id']);
     exit;*/
-
-    echo $post['id'];
+echo $_POST['postid'];
 }
 
 
@@ -72,7 +71,7 @@ if(isset($_POST['UnhidePost'])){
     header("Location: delete.php?id=" . $_POST['id']);
     exit;*/
 
-    echo $post['id'];
+    echo $_POST['postid'];
 }
 
 //Get game data
@@ -216,13 +215,7 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                         <?php $format = 'M d, Y, g:i a';
                             echo date($format, strtotime($post['date'])); ?>
                         <p><?= $post['post'] ?></p>
-                    <?php if($post['is_visible'] == true): ?>
-                        <input type="hidden" name="postid" id="postid" value="<?php echo $post['id'] ?>" />
-                        <input type="submit" name="HidePost" value="Hide Post">             
-                    <?php else: ?>
-                        <input type="hidden" name="postid" id="postid" value="<?php echo $post['id'] ?>" />
-                        <input type="submit" name="UnhidePost" value="Unhide Post">
-                    <?php endif ?>
+                        <a href="postedit.php?id=<?= $post['id'] ?>">Edit</a>
                     <?php endforeach ?>
                 <?php endif ?>
                 </div>

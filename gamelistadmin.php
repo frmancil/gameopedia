@@ -56,7 +56,7 @@ foreach($data as $row) {
             <div class="blog_post">
                 <?php foreach($games as $game): ?>
                     <h2><a href="delete.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>
-                    <h2><a href="edit.php?id=<?= $game['id'] ?>"> Edit </a></h2>
+                    <a href="edit.php?id=<?= $game['id'] ?>"> Edit </a>
                   <!--  <h2><a href="upload.php?id=<?= $game['id'] ?>"> Add Cover </a></h2> -->
                 <?php endforeach ?>
             </div>

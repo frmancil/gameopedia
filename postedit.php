@@ -4,8 +4,8 @@ require('connect.php');
 
 if(isset($_POST['Delete'])){
     //Sanitize id to secure it's a number
-    $id = filter_input(INPUT_POST, 'publisherid', FILTER_SANITIZE_NUMBER_INT);
-    $delete_query = "UPDATE publisher SET is_visible = false WHERE id = :id";
+    $id = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
+    $delete_query = "UPDATE posts SET is_visible = false WHERE id = :id";
     $delete = $db->prepare($delete_query);
     $delete->bindValue(':id', $id);
 
@@ -13,7 +13,7 @@ if(isset($_POST['Delete'])){
     $delete->execute();
 
     //Redirect to the page with the new information
-    header("Location: publisheredit.php?id=" . $_POST['publisherid']);
+    header("Location: delete.php?id=" . $_POST['gameid']);
     exit;
 }
 
@@ -21,8 +21,8 @@ if(isset($_POST['Delete'])){
 
 if(isset($_POST['Undelete'])){
     //Sanitize id to secure it's a number
-    $id = filter_input(INPUT_POST, 'publisherid', FILTER_SANITIZE_NUMBER_INT);
-    $delete_query = "UPDATE publisher SET is_visible = true WHERE id = :id";
+    $id = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
+    $delete_query = "UPDATE posts SET is_visible = true WHERE id = :id";
     $delete = $db->prepare($delete_query);
     $delete->bindValue(':id', $id);
 
@@ -30,41 +30,41 @@ if(isset($_POST['Undelete'])){
     $delete->execute();
 
     //Redirect to the page with the new information
-    header("Location: publisheredit.php?id=" . $_POST['publisherid']);
+    header("Location: delete.php?id=" . $_POST['gameid']);
     exit;
 }
 
 //Select statement to look for the specific post
-$queryPublisher = "SELECT * FROM publisher where id = :id";
+$queryPost = "SELECT * FROM posts where id = :id";
 //PDO Preparation
-$resultPublisher = $db->prepare($queryPublisher);
+$resultPost = $db->prepare($queryPost);
 //Sanitize id to secure it's a number
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 //Bind the parameter in the query to the variable
-$resultPublisher->bindValue(':id', $id);
-$resultPublisher->execute();
+$resultPost->bindValue(':id', $id);
+$resultPost->execute();
 //Fetch the selected row
-$publisher = $resultPublisher->fetch();
+$post = $resultPost->fetch();
 
-if ($_POST && isset($_POST['name']) && !empty($_POST['name'])) {
+if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
         //  Sanitize input to escape malicious code attemps
-        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $update_id = filter_input(INPUT_POST, 'publisherid', FILTER_SANITIZE_NUMBER_INT);
+        $name = filter_input(INPUT_POST, 'post', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $update_id = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
         
         //Query to update the values and bind parameters
-        $insert_query = "UPDATE publisher SET name =:name WHERE id = :publisherid";
+        $insert_query = "UPDATE posts SET post =:post WHERE id = :postid";
         $insert = $db->prepare($insert_query);
-        $insert->bindValue(':name', $name);
-        $insert->bindValue(':publisherid', $update_id);
+        $insert->bindValue(':post', $name);
+        $insert->bindValue(':postid', $update_id);
 
         $insert->execute();
 
-        header("Location: publisherlist.php");
+        header("Location: delete.php?id=" . $_POST['gameid']);
         exit;
 
     } else if($_POST) {
         $id = false;
-        echo 'PLEASE ADD PUBLISHER NAME';
+        echo 'DO NOT REMOVE POST INFORMATION';
     }
 
 ?>
@@ -74,7 +74,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name'])) {
 
 <head>
     <meta charset="UTF-8">
-    <title>Gameopedia - Publisher Edit</title>
+    <title>Gameopedia - Edit Post</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="./logo.png">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
@@ -86,23 +86,24 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name'])) {
     <div id="wrapper">
         <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
-            <form action="publisheredit.php" method="post">
+            <form action="postedit.php" method="post">
                 <fieldset>
                     <legend>Edit</legend>
-                    <input type="hidden" name="publisherid" id="publisherid" value="<?php echo $publisher['id'] ?>" />
+                    <input type="hidden" name="gameid" id="gameid" value="<?php echo $post['game_id'] ?>" />
+                    <input type="hidden" name="postid" id="postid" value="<?php echo $post['id'] ?>" />
                     <p>
-                        <?php if($publisher): ?>
-                            <label for="name">Name</label>
-                            <input name="name" id="name" value="<?= $publisher['name'] ?>"></input>
+                        <?php if($post): ?>
+                            <label for="post">Post</label>
+                            <input name="post" id="post" value="<?= $post['post'] ?>"></input>
                         <?php else: ?>
-                            <label for="name">Name</label>
-                            <input name="name" id="name"></input>
+                            <label for="post">Post</label>
+                            <input name="post" id="post"></input>
                         <?php endif ?>
                     </p>
                     <p>
                         <input type="submit" name="command" value="Edit">
                     </p>
-                    <?php if($publisher['is_visible'] == true): ?>
+                    <?php if($post['is_visible'] == true): ?>
                         <input type="submit" name="Delete" value="Hide">
                     <?php else: ?>
                         <input type="submit" name="Undelete" value="Unhide">
