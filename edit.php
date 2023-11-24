@@ -2,6 +2,15 @@
 
 require('connect.php');
 
+$query = "SELECT * FROM publisher WHERE is_visible = true";
+//PDO Preparation
+$publisherSearch = $db->prepare($query);
+//Sanitize id to secure it's a number
+//$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+//Bind the parameter in the query to the variable
+//$result->bindValue('id', $id, PDO::PARAM_INT);
+$publisherSearch->execute();
+
 //Get game data
 //Select statement to look for the specific post
 $queryGame = "SELECT * FROM games where id = :id";
@@ -107,7 +116,11 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                     </p>
                     <p>
                         <label for="publisher">Publisher</label>
-                        <input name="publisher" id="publisher" value="<?= $game['publisher'] ?>"></input>
+                        <select name="publisher">
+                            <?php while ($post = $publisherSearch->fetch()) : ?>
+                                <option value="<?= $post['name'] ?>"><?= $post['name'] ?></option>
+                            <?php endwhile ?>
+                        </select>
                     </p>
                     <p>
                         <label for="year">Year</label>

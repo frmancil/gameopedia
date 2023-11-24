@@ -1,5 +1,10 @@
 <?php
 
+use voku\helper\Paginator;
+
+// include the composer-autoloader
+require_once __DIR__ . '/vendor/autoload.php';
+
 require('connect.php');
 
 if(isset($_POST['Delete'])){
@@ -13,7 +18,7 @@ if(isset($_POST['Delete'])){
     $delete->execute();
 
     //Redirect to the page with the new information
-    header("Location: gamelistadmin.php");
+    header("Location: delete.php?id=" . $id);
     exit;
 }
 
@@ -25,6 +30,40 @@ if(isset($_POST['Undelete'])){
     $delete_query = "UPDATE games SET is_visible = true WHERE id = :id";
     $delete = $db->prepare($delete_query);
     $delete->bindValue(':id', $id);
+
+    //Execute the update
+    $delete->execute();
+
+    //Redirect to the page with the new information
+    header("Location: delete.php?id=" . $id);
+    exit;
+}
+
+if(isset($_POST['HidePost'])){
+    //Sanitize id to secure it's a number
+    $postid = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
+    $delete_query = "UPDATE posts SET is_visible = false WHERE id = :id";
+    $delete = $db->prepare($delete_query);
+    $delete->bindValue(':id', $postid);
+    $gamePost = 'id';
+
+    //Execute the update
+    $delete->execute();
+
+    //Redirect to the page with the new information
+    header("Location: gamelistadmin.php");
+    exit;
+}
+
+
+
+if(isset($_POST['UnhidePost'])){
+    //Sanitize id to secure it's a number
+    $postid = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
+    $delete_query = "UPDATE posts SET is_visible = true WHERE id = :id";
+    $delete = $db->prepare($delete_query);
+    $delete->bindValue(':id', $postid);
+    $gamePost = 'id';
 
     //Execute the update
     $delete->execute();
@@ -68,6 +107,62 @@ $resultSystem->bindValue(':system_id', $cover['system_id']);
 $resultSystem->execute();
 //Fetch the selected row
 $system = $resultSystem->fetch();
+
+// create new object pass in number of pages and identifier
+$pages = new Paginator(5, 'p');
+
+//Get game data
+//Select statement to look for the specific post
+$queryPost = "SELECT COUNT(*) FROM posts WHERE game_id = :id";
+//PDO Preparation
+$resultPost = $db->prepare($queryPost);
+//Sanitize id to secure it's a number
+$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+//Bind the parameter in the query to the variable
+$resultPost->bindValue(':id', $id);
+$resultPost->execute();
+//Fetch the selected row
+$count = $resultPost->fetch();
+
+// get number of total records
+$rowCountPost = $count[0];
+
+// pass number of records to
+$pages->set_total($rowCountPost);
+
+$data = $db->query('SELECT posts.post, users.username, posts.date, posts.is_visible, posts.id FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' ORDER BY date DESC' . $pages->get_limit());
+
+$posts=array();
+foreach($data as $row) {
+  array_push($posts, $row);
+}
+
+if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
+        //  Sanitize input to escape malicious code attemps
+        $post = filter_input(INPUT_POST, 'post', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $gameId = filter_input(INPUT_POST, 'gameid', FILTER_SANITIZE_NUMBER_INT);
+        $userId = filter_input(INPUT_POST, 'userid', FILTER_SANITIZE_NUMBER_INT);
+        
+        //Query to update the values and bind parameters
+        $insert_query = "INSERT INTO posts (post, user_id, game_id, is_visible) VALUES (:post, :userId, :gameId, true)";
+        $insert = $db->prepare($insert_query);
+        $insert->bindValue(':post', $post);
+        $insert->bindValue(':gameId', $gameId);
+        $insert->bindValue(':userId', $userId);
+        
+        //  Execute the insert
+        if($insert->execute()){
+
+            echo "Success";
+            header("Location: delete.php?id=" . $gameId);
+            exit;
+        }
+
+    } else if($_POST) {
+        $id = false;
+        echo 'PLEASE ADD TITLE AND CONTENT TO THE POST';
+        exit;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -104,6 +199,7 @@ $system = $resultSystem->fetch();
         <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
             <form action="delete.php" method="post">
+                                  <input type="hidden" name="id" id="id" value="<?php echo $game['id'] ?>" />
                 <fieldset>
             <div class="blog_post">
                 <h2><?= $game['name'] ?></h2>
@@ -111,16 +207,32 @@ $system = $resultSystem->fetch();
                     <textarea name="description" id="description" class="nonedit"><?= $game['description'] ?></textarea>
                         <img id="logo" src="./logos/<?php echo $system['logo_location']; ?>">
                         <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
-                </div>
-                    <input type="hidden" name="id" id="id" value="<?php echo $game['id'] ?>" />
-                    <?php if($game['is_visible'] == true): ?>
-                        <input type="submit" name="Delete" value="Delete">
+                        <?php if($posts): ?>
+                    <?php foreach($posts as $post): ?>
+                        <p><?= $post['username'] ?></p>
+                        <p><?= $post['id'] ?></p>
+                        <?php $format = 'M d, Y, g:i a';
+                            echo date($format, strtotime($post['date'])); ?>
+                        <p><?= $post['post'] ?></p>
+                    <?php if($post['is_visible'] == true): ?>
+                        <input type="hidden" name="postid" id="postid" value="<?php echo $post['id'] ?>" />
+                        <input type="submit" name="HidePost" value="Hide Post">             
                     <?php else: ?>
-                        <input type="submit" name="Undelete" value="Undelete">
+                        <input type="hidden" name="postid" id="postid" value="<?php echo $post['id'] ?>" />
+                        <input type="submit" name="UnhidePost" value="Unhide Post">
+                    <?php endif ?>
+                    <?php endforeach ?>
+                <?php endif ?>
+                </div>
+                    <?php if($game['is_visible'] == true): ?>
+                        <input type="submit" name="Delete" value="Hide Game">
+                    <?php else: ?>
+                        <input type="submit" name="Undelete" value="Unhide Game">
                     <?php endif ?>
             </div>
            </fieldset> 
         </form>
+        <p><?php echo $pages->page_links('?' . 'id=' . $game['id'] . '&'); ?></p>
         </div>
     </div>
 </body>

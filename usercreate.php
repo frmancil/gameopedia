@@ -1,63 +1,38 @@
 <?php
 
-//Import the PHPMailer class into the global namespace
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-
-require './vendor/autoload.php';
-$mail = new PHPMailer();
-$mail->isSMTP();
-$mail->SMTPDebug = SMTP::DEBUG_SERVER;
-$mail->Host = 'smtp-relay.brevo.com';
-$mail->Port = 587;
-$mail->SMTPAuth = true;
-$mail->Username = 'frmancil@gmail.com';
-$mail->Password = 'g3YhKFNDcAWbtBOm';
-
 require('connect.php');
 
 if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repassword']) && !empty($_POST['repassword'])){
-	if($_POST['password'] == $_POST['repassword']){
-		if ($_POST && isset($_POST['username']) && !empty($_POST['username'])){
-	$username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-	$query = "SELECT * FROM users where username = :username";
-	//PDO Preparation
-	$result = $db->prepare($query);
-	$result->bindValue(':username', $username);
-	$result->execute();
-	$userResult = $result->fetch();
-	//Fetch the selected row
-	if($userResult){
-		echo 'Username already exists';
-	} else {
-		if ($_POST && isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['email']) && !empty($_POST['email'])) {
+    if($_POST['password'] == $_POST['repassword']){
+        if ($_POST && isset($_POST['username']) && !empty($_POST['username'])){
+    $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $query = "SELECT * FROM users where username = :username";
+    //PDO Preparation
+    $result = $db->prepare($query);
+    $result->bindValue(':username', $username);
+    $result->execute();
+    $userResult = $result->fetch();
+    //Fetch the selected row
+    if($userResult){
+        echo 'Username already exists';
+    } else {
+        if ($_POST && isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['email']) && !empty($_POST['email'])) {
         //  Sanitize input to escape malicious code attemps
         $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-        $validationCode = random_int(100000, 999999);
         //Query to update the values and bind parameters
-        $insert_query = "INSERT INTO users (username, password, email, role, is_verified, is_visible, verification_code) VALUES (:username, :password, :email, 'USER', false, true, :code)";
+        $insert_query = "INSERT INTO users (username, password, email, role, is_verified, is_visible, verification_code) VALUES (:username, :password, :email, 'USER', true, true, 0)";
         $insert = $db->prepare($insert_query);
         $insert->bindValue(':username', $username);
         $insert->bindValue(':password', $password);
         $insert->bindValue(':email', $email);
-        $insert->bindValue(':code', $validationCode);
         
         //  Execute the insert
         if($insert->execute()){
             echo 'Success';
-            $mail->setFrom('register@gameopedia.com', 'Game-O-Pedia');
-            $mail->addAddress($email, $username);
-            $mail->Subject = 'Game-O-Pedia validation code';
-            $mail->Body = 'Validation code: ' . $validationCode;
-            if (!$mail->send()) {
-    			echo 'Mailer Error: ' . $mail->ErrorInfo;
-				} else {
-   				echo 'Message sent!';
-   				header("location:login.php");
-            	exit;
-			}
+            header("location:login.php");
+            exit;
         }
 
     } else if($_POST) {
@@ -65,11 +40,11 @@ if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repa
         echo 'PLEASE ADD TITLE AND CONTENT TO THE POST';
         exit;
     }
-	}
+    }
 }
-	} else {
-		echo 'Entered passwords not match';
-	}
+    } else {
+        echo 'Entered passwords not match';
+    }
 }
 ?>
 
@@ -90,16 +65,16 @@ if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repa
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-sm-6 border shadow-lg">
-        	<div class="mt-5 mb-5 flex-column text-center">
+            <div class="mt-5 mb-5 flex-column text-center">
                     <div class="mx-auto d-block">
                         <img src="./logo.png" alt="Logo" style="width: 80px;" class="rounded-pill">
                         <h3 class="vollkorn">Game-O-Pedia</h3>
                     </div>
 
             </div>
-            <form action="registration.php" method="post">
+            <form action="usercreate.php" method="post">
                 <fieldset>
-                    <legend>Registration Form</legend>
+                    <legend>Create New User</legend>
                     <input class="form-control mb-4" placeholder="Enter your username" id="username" name="username">
                     <input type="password" class="form-control mb-4" placeholder="Enter your password" id="password" name="password">
                     <input type="password" class="form-control mb-4" placeholder="Re-enter your password" id="repassword" name="repassword">

@@ -15,16 +15,22 @@ require('connect.php');
                 echo 'Username not found';
             } else {
                 if(password_verify($_POST['password'], $userResult['password'])){
-                    session_start();
-                    $_SESSION['username'] = $userResult['username'];
-                    $_SESSION['id'] = $userResult['id'];
-                    $_SESSION['role'] = $userResult['role'];
-                    $_SESSION['verified'] = $userResult['is_verified'];
-                    if($_SESSION['verified'] == true){
-                        $_SESSION['logged_in'] = true;
-                        header("location:index.php");
+                    if($userResult['is_visible']){
+
+                        session_start();
+                        $_SESSION['username'] = $userResult['username'];
+                        $_SESSION['id'] = $userResult['id'];
+                        $_SESSION['role'] = $userResult['role'];
+                        $_SESSION['verified'] = $userResult['is_verified'];
+
+                        if($_SESSION['verified'] == true){
+                            $_SESSION['logged_in'] = true;
+                            header("location:index.php");
+                        } else {
+                            header("location:verification.php");
+                    }
                     } else {
-                        header("location:verification.php");
+                         echo 'User disabled';
                     }
                 } else {
                     echo 'Wrong password';

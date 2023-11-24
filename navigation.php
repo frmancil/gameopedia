@@ -12,6 +12,7 @@
 
             <ul class="navbar-nav ms-auto px-4">
                 <?php if (isset($_SESSION['logged_in'])): ?>
+                    Username: <?= $_SESSION['username'] ?>
                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'ADMIN'): ?>
                         <li class="nav-item">
                             <a class="nav-link link-success" href="index.php">Home</a>
@@ -21,6 +22,12 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link link-primary" href="newgame.php">New Game</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link link-primary" href="userlist.php">User List</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link link-primary" href="usercreate.php">New User</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link link-primary" href="logout.php">Logout</a>

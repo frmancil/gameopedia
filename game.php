@@ -47,7 +47,7 @@ $pages = new Paginator(5, 'p');
 
 //Get game data
 //Select statement to look for the specific post
-$queryPost = "SELECT COUNT(*) FROM posts WHERE game_id = :id AND is_visible = TRUE";
+$queryPost = "SELECT COUNT(*) FROM posts WHERE game_id = :id";
 //PDO Preparation
 $resultPost = $db->prepare($queryPost);
 //Sanitize id to secure it's a number
@@ -64,7 +64,7 @@ $rowCountPost = $count[0];
 // pass number of records to
 $pages->set_total($rowCountPost);
 
-$data = $db->query('SELECT posts.post, users.username, posts.date FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' AND is_visible = TRUE ORDER BY date DESC' . $pages->get_limit());
+$data = $db->query('SELECT posts.post, users.username, posts.date, posts.is_visible FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' ORDER BY date DESC' . $pages->get_limit());
 
 $posts=array();
 foreach($data as $row) {
@@ -144,7 +144,11 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                         <p><?= $post['username'] ?></p>
                         <?php $format = 'M d, Y, g:i a';
                             echo date($format, strtotime($post['date'])); ?>
-                        <p><?= $post['post'] ?></p>
+                        <?php if($post['is_visible'] == true): ?>
+                            <p><?= $post['post'] ?></p>
+                        <?php else: ?>
+                            <p>Comment deleted by admin<p>
+                        <?php endif ?>    
                     <?php endforeach ?>
                 <?php endif ?>
                 <?php if (isset($_SESSION['logged_in'])): ?>

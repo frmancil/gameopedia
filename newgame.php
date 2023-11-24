@@ -20,7 +20,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
         $year = filter_input(INPUT_POST, 'year', FILTER_SANITIZE_NUMBER_INT);
         
         //Query to update the values and bind parameters
-        $insert_query = "INSERT INTO games (name, description, publisher, year) VALUES (:name, :description, :publisher, :year)";
+        $insert_query = "INSERT INTO games (name, description, publisher, year, is_visible) VALUES (:name, :description, :publisher, :year, true)";
         $insert = $db->prepare($insert_query);
         $insert->bindValue(':name', $name);
         $insert->bindValue(':description', $description);
@@ -74,7 +74,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
     <?php include 'navigation.php'?>
     <div id="wrapper">
         <div id="all_blogs">
-            <form action="newgame.php" method="post">
+            <form action="newgame.php" method="post" enctype="multipart/form-data">
                 <fieldset>
                     <legend>New Game</legend>
                     <p>
@@ -86,22 +86,16 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                         <textarea name="description" id="description"></textarea>
                     </p>
                     <p>
-
-            <select>
-                            <?php while ($post = $publisherSearch->fetch()) : ?>
-
-                <option value="<?= $post['id'] ?>"><?= $post['name'] ?></option>
-                            <?php endwhile ?>
-            </select>
-
-
-
                         <label for="publisher">Publisher</label>
-                        <input name="publisher" id="publisher"></textarea>
+                        <select name="publisher">
+                            <?php while ($post = $publisherSearch->fetch()) : ?>
+                                <option value="<?= $post['name'] ?>"><?= $post['name'] ?></option>
+                            <?php endwhile ?>
+                        </select>
                     </p>
                     <p>
                         <label for="year">Year</label>
-                        <input name="year" id="year"></textarea>
+                        <input name="year" id="year"></input>
                     </p>
                     <p>
                         <input type="submit" name="command" value="Create">

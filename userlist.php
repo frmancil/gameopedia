@@ -12,7 +12,7 @@ require('connect.php');
 
 //Get game data
 //Select statement to look for the specific post
-$query = "SELECT COUNT(*) FROM games";
+$query = "SELECT COUNT(*) FROM users";
 //PDO Preparation
 $result = $db->prepare($query);
 //Sanitize id to secure it's a number
@@ -29,11 +29,11 @@ $rowCount = $count[0];
 // pass number of records to
 $pages->set_total($rowCount);
 
-$data = $db->query('SELECT * FROM games' . $pages->get_limit());
+$data = $db->query('SELECT * FROM users' . $pages->get_limit());
 
-$games=array();
+$users=array();
 foreach($data as $row) {
-  array_push($games, $row);
+  array_push($users, $row);
 }
 ?>
 
@@ -54,10 +54,8 @@ foreach($data as $row) {
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
-                <?php foreach($games as $game): ?>
-                    <h2><a href="delete.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>
-                    <h2><a href="edit.php?id=<?= $game['id'] ?>"> Edit </a></h2>
-                  <!--  <h2><a href="upload.php?id=<?= $game['id'] ?>"> Add Cover </a></h2> -->
+                <?php foreach($users as $user): ?>
+                    <h2><a href="useredit.php?id=<?= $user['id'] ?>"><?= $user['username'] ?></a></h2>
                 <?php endforeach ?>
             </div>
         </div>
