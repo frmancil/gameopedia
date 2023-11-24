@@ -24,27 +24,30 @@ $resultGame->execute();
 //Fetch the selected row
 $game = $resultGame->fetch();
 
+if($game){
 //Get game image
 $queryCover = "SELECT * FROM game_system where game_id = :game_id";
 //PDO Preparation
 $resultCover = $db->prepare($queryCover);
 //Sanitize id to secure it's a number
 //Bind the parameter in the query to the variable
-$resultCover->bindValue(':game_id', $game['id']);
-$resultCover->execute();
+   $resultCover->bindValue(':game_id', $game['id']);
+    $resultCover->execute();
 //Fetch the selected row
-$cover = $resultCover->fetch();
+    $cover = $resultCover->fetch();
 
 //Get game system
-$system = "SELECT * FROM system where id = :system_id";
+    $system = "SELECT * FROM system where id = :system_id";
 //PDO Preparation
-$resultSystem = $db->prepare($system);
+    $resultSystem = $db->prepare($system);
 //Sanitize id to secure it's a number
 //Bind the parameter in the query to the variable
-$resultSystem->bindValue(':system_id', $cover['system_id']);
-$resultSystem->execute();
+    $resultSystem->bindValue(':system_id', $cover['system_id']);
+    $resultSystem->execute();
 //Fetch the selected row
-$system = $resultSystem->fetch();
+    $system = $resultSystem->fetch(); 
+}
+
 
 if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['description']) 
     && !empty($_POST['description']) && isset($_POST['publisher']) && !empty($_POST['publisher']) && isset($_POST['year']) && !empty($_POST['year'])) {
@@ -71,8 +74,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
 
     } else if($_POST) {
         $id = false;
-        echo 'PLEASE ADD CONTENT TO THE GAME';
-        exit;
+        echo 'PLEASE ADD ALL CONTENT TO THE GAME';
     }
 
 ?>
@@ -90,9 +92,10 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
     <script src="./vendor/tinymce/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
       tinymce.init({
-        selector: '#description',
+        selector: 'textarea#description',
         height: 300,
-        resize: false
+        resize: false,
+        branding: false
       });
     </script>
 </head>
@@ -107,12 +110,22 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                     <legend>Edit</legend>
                     <input type="hidden" name="gameid" id="gameid" value="<?php echo $game['id'] ?>" />
                     <p>
-                        <label for="name">Game Name</label>
-                        <input name="name" id="name" value="<?= $game['name'] ?>"></input>
+                        <?php if($game): ?>
+                            <label for="name">Game Name</label>
+                            <input name="name" id="name" value="<?= $game['name'] ?>"></input>
+                        <?php else: ?>
+                            <label for="name">Game Name</label>
+                            <input name="name" id="name"></input>
+                        <?php endif ?>
                     </p>
                     <p>
-                        <label for="description">Description</label>
+                        <?php if($game): ?>
+                            <label for="description">Description</label>
                         <textarea name="description" id="description"><?= $game['description'] ?></textarea>
+                        <?php else: ?>
+                            <label for="description">Description</label>
+                            <textarea name="description" id="description"></textarea>
+                        <?php endif ?>
                     </p>
                     <p>
                         <label for="publisher">Publisher</label>
@@ -123,8 +136,13 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                         </select>
                     </p>
                     <p>
-                        <label for="year">Year</label>
-                        <input name="year" id="year" value="<?= $game['year'] ?>"></input>
+                        <?php if($game): ?>
+                            <label for="year">Year</label>
+                            <input name="year" id="year" value="<?= $game['year'] ?>"></input>
+                        <?php else: ?>
+                            <label for="year">Year</label>
+                            <input name="year" id="year"></input>
+                        <?php endif ?>
                     </p>
                     <p>
                         <input type="submit" name="command" value="Edit">

@@ -71,7 +71,6 @@ if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repa
     }else if($_POST) {
         $id = false;
         echo 'PLEASE ADD USER INFORMATION';
-        exit;
     }
         
 }
@@ -105,10 +104,18 @@ if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repa
                 <fieldset>
                     <input type="hidden" name="userid" id="userid" value="<?php echo $user['id'] ?>" />
                     <legend>Create New User</legend>
-                    <input class="form-control mb-4" placeholder="Enter your username" id="username" name="username" value="<?php echo $user['username'] ?>">
-                    <input type="password" class="form-control mb-4" placeholder="Enter your password" id="password" name="password">
-                    <input type="password" class="form-control mb-4" placeholder="Re-enter your password" id="repassword" name="repassword">
-                    <input type="email" class="form-control mb-4" placeholder="Enter your email" id="email" name="email" value="<?php echo $user['email'] ?>">
+                    <?php if($user): ?>
+                        <input class="form-control mb-4" placeholder="Enter your username" id="username" name="username" value="<?php echo $user['username'] ?>">
+                    <?php else: ?>
+                        <input class="form-control mb-4" placeholder="Enter your username" id="username" name="username">
+                    <?php endif ?> 
+                        <input type="password" class="form-control mb-4" placeholder="Enter your password" id="password" name="password">
+                        <input type="password" class="form-control mb-4" placeholder="Re-enter your password" id="repassword" name="repassword">
+                    <?php if($user): ?>
+                        <input type="email" class="form-control mb-4" placeholder="Enter your email" id="email" name="email" value="<?php echo $user['email'] ?>">
+                    <?php else: ?>
+                        <input type="email" class="form-control mb-4" placeholder="Enter your email" id="email" name="email">
+                    <?php endif ?> 
                     <select name="isVisible">
                         <option value=1>True</option>
                         <option value=0>False</option>

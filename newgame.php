@@ -63,9 +63,10 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
     <script src="./vendor/tinymce/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
       tinymce.init({
-        selector: '#description',
+        selector: 'textarea#description',
         height: 300,
-        resize: false
+        resize: false,
+        branding: false
       });
     </script>
 </head>
