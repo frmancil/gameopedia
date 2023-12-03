@@ -5,7 +5,7 @@ require('connect.php');
 if(isset($_POST['Delete'])){
     //Sanitize id to secure it's a number
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-    $delete_query = "DELETE FROM games_system WHERE game_id = :id";
+    $delete_query = "DELETE FROM game_system WHERE game_id = :id";
     $delete = $db->prepare($delete_query);
     $delete->bindValue(':id', $id);
 
@@ -21,7 +21,7 @@ if(isset($_POST['Delete'])){
     }
     
     //Redirect to the page with the new information
-    header("Location: delete.php?id=" . $id);
+    header("Location: gamelistadmin.php");
     exit;
 }
 
@@ -40,41 +40,6 @@ if(isset($_POST['Undelete'])){
     //Redirect to the page with the new information
     header("Location: delete.php?id=" . $id);
     exit;
-}
-
-if(isset($_POST['HidePost'])){
-    //Sanitize id to secure it's a number
-    /*$postid = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
-    $delete_query = "UPDATE posts SET is_visible = false WHERE id = :id";
-    $delete = $db->prepare($delete_query);
-    $delete->bindValue(':id', $postid);
-
-    //Execute the update
-    $delete->execute();
-
-    //Redirect to the page with the new information
-    header("Location: delete.php?id=" . $_POST['id']);
-    exit;*/
-echo $_POST['postid'];
-}
-
-
-
-if(isset($_POST['UnhidePost'])){
-    //Sanitize id to secure it's a number
-   /* $postid = filter_input(INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT);
-    $delete_query = "UPDATE posts SET is_visible = true WHERE id = :id";
-    $delete = $db->prepare($delete_query);
-    $delete->bindValue(':id', $postid);
-
-    //Execute the update
-    $delete->execute();
-
-    //Redirect to the page with the new information
-    header("Location: delete.php?id=" . $_POST['id']);
-    exit;*/
-
-    echo $_POST['postid'];
 }
 
 //Get game data
@@ -114,7 +79,7 @@ $system = $resultSystem->fetch();
 
 //Get game data
 //Select statement to look for the specific post
-$queryPost = "SELECT posts.post, users.username, posts.date, posts.is_visible, posts.id FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id = :id ORDER BY date DESC";
+$queryPost = "SELECT posts.post, users.username, posts.date, posts.is_visible, posts.id FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id = :id AND posts.is_visible = true ORDER BY date DESC";
 //PDO Preparation
 $resultPost = $db->prepare($queryPost);
 //Sanitize id to secure it's a number
@@ -197,19 +162,18 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                         <?php endif ?>
                         <?php if($resultPost->fetch()): ?>
                     <?php while($post = $resultPost->fetch()): ?>
+                     <?php if($game['is_visible'] == true): ?>
                         <p><?= $post['username'] ?></p>
                         <?php $format = 'M d, Y, g:i a';
                             echo date($format, strtotime($post['date'])); ?>
                         <p><?= $post['post'] ?></p>
                         <a href="postedit.php?id=<?= $post['id'] ?>">Edit</a>
+
+                    <?php endif ?>
                     <?php endwhile ?>
                 <?php endif ?>
                 </div>
-                    <?php if($game['is_visible'] == true): ?>
-                        <input type="submit" name="Delete" value="Hide Game">
-                    <?php else: ?>
-                        <input type="submit" name="Undelete" value="Unhide Game">
-                    <?php endif ?>
+                       <input type="submit" name="Delete" value="Hide Game">
             </div>
            </fieldset> 
         </form>

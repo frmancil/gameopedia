@@ -55,11 +55,13 @@ $post = $resultPost->fetch();
                     <input type="hidden" name="postid" id="postid" value="<?php echo $post['id'] ?>" />
                     <p>
                         <?php if($post): ?>
+                            <?php if($post['is_visible'] == true): ?>
                             <label for="post"><?= $post['post'] ?></label>
+                            <input type="submit" name="Delete" value="Hide">
                         <?php endif ?>
                     </p>
-                    <?php if($post['is_visible'] == true): ?>
-                        <input type="submit" name="Delete" value="Hide">
+                    
+                        
                     <?php endif ?>
                 </fieldset>
             </form>
