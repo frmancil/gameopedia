@@ -1,10 +1,5 @@
 <?php
 
-use voku\helper\Paginator;
-
-// include the composer-autoloader
-require_once __DIR__ . '/vendor/autoload.php';
-
 require('connect.php');
 
 //Get game data
@@ -42,12 +37,9 @@ $resultSystem->execute();
 //Fetch the selected row
 $system = $resultSystem->fetch();
 
-// create new object pass in number of pages and identifier
-$pages = new Paginator(5, 'p');
-
 //Get game data
 //Select statement to look for the specific post
-$queryPost = "SELECT COUNT(*) FROM posts WHERE game_id = :id";
+$queryPost = "SELECT posts.post, users.username, posts.date, posts.is_visible FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id = :id ORDER BY date DESC";
 //PDO Preparation
 $resultPost = $db->prepare($queryPost);
 //Sanitize id to secure it's a number
@@ -55,21 +47,6 @@ $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 //Bind the parameter in the query to the variable
 $resultPost->bindValue(':id', $id);
 $resultPost->execute();
-//Fetch the selected row
-$count = $resultPost->fetch();
-
-// get number of total records
-$rowCountPost = $count[0];
-
-// pass number of records to
-$pages->set_total($rowCountPost);
-
-$data = $db->query('SELECT posts.post, users.username, posts.date, posts.is_visible FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' ORDER BY date DESC' . $pages->get_limit());
-
-$posts=array();
-foreach($data as $row) {
-  array_push($posts, $row);
-}
 
 if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
         //  Sanitize input to escape malicious code attemps
@@ -141,17 +118,15 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                             <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
                         <?php endif ?>
                 </div>
-                <?php if($posts): ?>
-                    <?php foreach($posts as $post): ?>
+                <?php if($resultPost->fetch()): ?>
+                    <?php while($post = $resultPost->fetch()) : ?>
+                        <?php if($post['is_visible'] == true): ?>
                         <p><?= $post['username'] ?></p>
                         <?php $format = 'M d, Y, g:i a';
-                            echo date($format, strtotime($post['date'])); ?>
-                        <?php if($post['is_visible'] == true): ?>
+                            echo date($format, strtotime($post['date'])); ?>    
                             <p><?= $post['post'] ?></p>
-                        <?php else: ?>
-                            <p>Comment deleted by admin<p>
                         <?php endif ?>    
-                    <?php endforeach ?>
+                    <?php endwhile ?>
                 <?php endif ?>
                 <?php if (isset($_SESSION['logged_in'])): ?>
                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'USER'): ?>
@@ -171,7 +146,6 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                     <?php endif ?>
                 <?php endif ?>
             </div>
-            <p><?php echo $pages->page_links('?' . 'id=' . $game['id'] . '&'); ?></p>
         </div>
     </div>
 </body>

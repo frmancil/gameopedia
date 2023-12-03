@@ -1,22 +1,25 @@
 <?php
 
-use voku\helper\Paginator;
-
-// include the composer-autoloader
-require_once __DIR__ . '/vendor/autoload.php';
-
 require('connect.php');
 
 if(isset($_POST['Delete'])){
     //Sanitize id to secure it's a number
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-    $delete_query = "UPDATE games SET is_visible = false WHERE id = :id";
+    $delete_query = "DELETE FROM games_system WHERE game_id = :id";
     $delete = $db->prepare($delete_query);
     $delete->bindValue(':id', $id);
 
     //Execute the update
-    $delete->execute();
+    if($delete->execute()){
+        $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+        $delete_game_query = "DELETE FROM games WHERE id = :id";
+        $delete_game = $db->prepare($delete_game_query);
+        $delete_game->bindValue(':id', $id);
 
+        //Execute the update
+        $delete_game->execute();
+    }
+    
     //Redirect to the page with the new information
     header("Location: delete.php?id=" . $id);
     exit;
@@ -109,12 +112,9 @@ $resultSystem->execute();
 //Fetch the selected row
 $system = $resultSystem->fetch();
 
-// create new object pass in number of pages and identifier
-$pages = new Paginator(5, 'p');
-
 //Get game data
 //Select statement to look for the specific post
-$queryPost = "SELECT COUNT(*) FROM posts WHERE game_id = :id";
+$queryPost = "SELECT posts.post, users.username, posts.date, posts.is_visible, posts.id FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id = :id ORDER BY date DESC";
 //PDO Preparation
 $resultPost = $db->prepare($queryPost);
 //Sanitize id to secure it's a number
@@ -122,21 +122,6 @@ $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 //Bind the parameter in the query to the variable
 $resultPost->bindValue(':id', $id);
 $resultPost->execute();
-//Fetch the selected row
-$count = $resultPost->fetch();
-
-// get number of total records
-$rowCountPost = $count[0];
-
-// pass number of records to
-$pages->set_total($rowCountPost);
-
-$data = $db->query('SELECT posts.post, users.username, posts.date, posts.is_visible, posts.id FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' ORDER BY date DESC' . $pages->get_limit());
-
-$posts=array();
-foreach($data as $row) {
-  array_push($posts, $row);
-}
 
 if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
         //  Sanitize input to escape malicious code attemps
@@ -210,15 +195,14 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                         <?php if($cover['cover_location']): ?>
                             <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
                         <?php endif ?>
-                        <?php if($posts): ?>
-                    <?php foreach($posts as $post): ?>
+                        <?php if($resultPost->fetch()): ?>
+                    <?php while($post = $resultPost->fetch()): ?>
                         <p><?= $post['username'] ?></p>
-                        <p><?= $post['id'] ?></p>
                         <?php $format = 'M d, Y, g:i a';
                             echo date($format, strtotime($post['date'])); ?>
                         <p><?= $post['post'] ?></p>
                         <a href="postedit.php?id=<?= $post['id'] ?>">Edit</a>
-                    <?php endforeach ?>
+                    <?php endwhile ?>
                 <?php endif ?>
                 </div>
                     <?php if($game['is_visible'] == true): ?>
@@ -229,7 +213,6 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
             </div>
            </fieldset> 
         </form>
-        <p><?php echo $pages->page_links('?' . 'id=' . $game['id'] . '&'); ?></p>
         </div>
     </div>
 </body>
