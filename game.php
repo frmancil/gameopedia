@@ -1,10 +1,5 @@
 <?php
 
-use voku\helper\Paginator;
-
-// include the composer-autoloader
-require_once __DIR__ . '/vendor/autoload.php';
-
 require('connect.php');
 
 //Get game data

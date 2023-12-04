@@ -2,13 +2,26 @@
 
 require('connect.php');
 
-//Get game data
-//Select statement to look for the specific post
-$query = "SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id AND games.is_visible = TRUE";
-//PDO Preparation
-$result = $db->prepare($query);
-//Sanitize id to secure it's a number
-$result->execute();
+if($_POST && isset($_POST['sort']) && !empty($_POST['sort'])){
+
+$data = $db->query('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id ORDER BY ' . $_POST['sort'] . '  ASC');
+
+$games=array();
+$sorted = $_POST['sort'];
+foreach($data as $row) {
+  array_push($games, $row);
+}
+
+} else {
+
+$data = $db->query('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id');
+
+$games=array();
+foreach($data as $row) {
+  array_push($games, $row);
+}
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +41,23 @@ $result->execute();
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
-                <?php while($game = $result->fetch()): ?>
+                <form action="gamelistadmin.php" method="POST">
+                    <?php if($_SESSION['logged_in']): ?>
+                    <select onchange="this.form.submit();" name="sort">
+                        <option value="">Sort By</option>
+                        <option value='name'>Name</option>
+                        <option value='year'>Created</option>
+                        <option value='date_added'>Date Updated</option>
+                    </select>
+                <?php endif ?>
+                <?php if(isset($_POST['sort'])): ?>
+                    <?php if($sorted == 'date_added'): ?>
+                    <p>Sorted By Updated</p>
+                    <?php else: ?>
+                    <p>Sorted By <?= $sorted ?></p>
+                   <?php endif ?>  
+                <?php endif ?>
+                <?php foreach($games as $game): ?>
                     <h2><a href="delete.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>
                     <h6><?= $game['publisher'] ?> - <?= $game['year'] ?></h6>
                     <?php if($game['cover_location']): ?>
@@ -37,7 +66,7 @@ $result->execute();
                     <a href="edit.php?id=<?= $game['id'] ?>"> Edit </a> 
                   <!--  <h2><a href="upload.php?id=<?= $game['id'] ?>"> Add Cover </a></h2> -->
                   <hr class="double">
-                <?php endwhile ?>
+                <?php endforeach ?>
             </div>
         </div>
     </div>

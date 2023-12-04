@@ -2,12 +2,25 @@
 
 require('connect.php');
 
-//Get game data
-//Select statement to look for the specific post
-$query = "SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id AND games.is_visible = TRUE";
-//PDO Preparation
-$result = $db->prepare($query);
-$result->execute();
+if($_POST && isset($_POST['sort']) && !empty($_POST['sort'])){
+
+$data = $db->query('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id ORDER BY ' . $_POST['sort'] . '  ASC');
+
+$games=array();
+$sorted = $_POST['sort'];
+foreach($data as $row) {
+  array_push($games, $row);
+}
+
+} else {
+
+$data = $db->query('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id');
+
+$games=array();
+foreach($data as $row) {
+  array_push($games, $row);
+}
+}
 
 ?>
 
@@ -28,7 +41,22 @@ $result->execute();
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
-                <?php while($game = $result->fetch()): ?>
+                <form action="gamelist.php" method="POST">
+                    <?php if($_SESSION): ?>
+                    <select onchange="this.form.submit();" name="sort">
+                        <option value="">Sort By</option>
+                        <option value='name'>Name</option>
+                        <option value='year'>Created</option>
+                        <option value='date_added'>Date Updated</option>
+                    </select>
+                    <?php endif ?>
+            <div class="blog_post">
+                <?php if($sorted == 'date_added'): ?>
+                    <p>Sorted By Updated</p>
+                    <?php else: ?>
+                    <p>Sorted By <?= $sorted ?></p>
+                   <?php endif ?> 
+                <?php foreach($games as $game): ?>
                     <div class="container">
                         <h2><a href="game.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>
                         <h6><?= $game['publisher'] ?> - <?= $game['year'] ?></h6>
@@ -37,8 +65,9 @@ $result->execute();
                         <?php endif ?>
                     </div>
                     <hr class="double">
-                <?php endwhile ?>
+                <?php endforeach ?>
             </div>
+        </form>
         </div>
     </div>
 </body>
