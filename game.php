@@ -1,5 +1,10 @@
 <?php
 
+use voku\helper\Paginator;
+
+// include the composer-autoloader
+require_once __DIR__ . '/vendor/autoload.php';
+
 require('connect.php');
 
 //Get game data
@@ -37,16 +42,14 @@ $resultSystem->execute();
 //Fetch the selected row
 $system = $resultSystem->fetch();
 
-//Get game data
-//Select statement to look for the specific post
-$queryPost = "SELECT posts.post, users.username, posts.date, posts.is_visible FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id = :id ORDER BY date DESC";
-//PDO Preparation
-$resultPost = $db->prepare($queryPost);
-//Sanitize id to secure it's a number
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-//Bind the parameter in the query to the variable
-$resultPost->bindValue(':id', $id);
-$resultPost->execute();
+//Query to Paginate, deleted the rest of the pagination logic
+$data = $db->query('SELECT posts.post, users.username, posts.date FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' AND posts.is_visible = true ORDER BY date DESC');
+
+$posts=array();
+foreach($data as $row) {
+  array_push($posts, $row);
+}
 
 if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
         //  Sanitize input to escape malicious code attemps
@@ -118,16 +121,15 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                             <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
                         <?php endif ?>
                 </div>
-                <?php if($resultPost->fetch()): ?>
-                    <?php while($post = $resultPost->fetch()) : ?>
-                        <?php if($post['is_visible'] == true): ?>
+                 <?php if($posts): ?>
+                    <?php foreach($posts as $post): ?>
                         <p><?= $post['username'] ?></p>
                         <?php $format = 'M d, Y, g:i a';
                             echo date($format, strtotime($post['date'])); ?>    
                             <p><?= $post['post'] ?></p>
-                        <?php endif ?>    
-                    <?php endwhile ?>
-                <?php endif ?>
+                    
+                    <?php endforeach ?>
+                    <?php endif ?>
                 <?php if (isset($_SESSION['logged_in'])): ?>
                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'USER'): ?>
                         <form action="game.php?id=<?= $game['id'] ?>" method="post">

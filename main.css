@@ -102,6 +102,25 @@ img#cover {
     width: 350px;
 }
 
+img#minicover {
+    width: 75px;
+}
+
 img#logo {
     width: 200px;
+}
+
+hr {
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: inset;
+  border-width: 1px;
+}
+
+hr.double {
+ border-top: 3px double;
+ border-bottom: none;
 }

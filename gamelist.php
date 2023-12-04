@@ -4,13 +4,9 @@ require('connect.php');
 
 //Get game data
 //Select statement to look for the specific post
-$query = "SELECT * FROM games WHERE is_visible = TRUE";
+$query = "SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id AND games.is_visible = TRUE";
 //PDO Preparation
 $result = $db->prepare($query);
-//Sanitize id to secure it's a number
-//$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-//Bind the parameter in the query to the variable
-//$result->bindValue('id', $id, PDO::PARAM_INT);
 $result->execute();
 
 ?>
@@ -33,7 +29,14 @@ $result->execute();
         <div id="all_blogs">
             <div class="blog_post">
                 <?php while($game = $result->fetch()): ?>
-                    <h2><a href="game.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>
+                    <div class="container">
+                        <h2><a href="game.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>
+                        <h6><?= $game['publisher'] ?> - <?= $game['year'] ?></h6>
+                        <?php if($game['cover_location']): ?>
+                            <img id="minicover" src="./covers/<?php echo $game['cover_location']; ?>">
+                        <?php endif ?>
+                    </div>
+                    <hr class="double">
                 <?php endwhile ?>
             </div>
         </div>

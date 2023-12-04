@@ -25,23 +25,6 @@ if(isset($_POST['Delete'])){
     exit;
 }
 
-
-
-if(isset($_POST['Undelete'])){
-    //Sanitize id to secure it's a number
-    $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-    $delete_query = "UPDATE games SET is_visible = true WHERE id = :id";
-    $delete = $db->prepare($delete_query);
-    $delete->bindValue(':id', $id);
-
-    //Execute the update
-    $delete->execute();
-
-    //Redirect to the page with the new information
-    header("Location: delete.php?id=" . $id);
-    exit;
-}
-
 //Get game data
 //Select statement to look for the specific post
 $queryGame = "SELECT * FROM games where id = :id";
@@ -77,16 +60,14 @@ $resultSystem->execute();
 //Fetch the selected row
 $system = $resultSystem->fetch();
 
-//Get game data
-//Select statement to look for the specific post
-$queryPost = "SELECT posts.post, users.username, posts.date, posts.is_visible, posts.id FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id = :id AND posts.is_visible = true ORDER BY date DESC";
-//PDO Preparation
-$resultPost = $db->prepare($queryPost);
-//Sanitize id to secure it's a number
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-//Bind the parameter in the query to the variable
-$resultPost->bindValue(':id', $id);
-$resultPost->execute();
+//Query to Paginate, deleted the rest of the pagination logic
+$data = $db->query('SELECT posts.post, users.username, posts.date, posts.is_visible, posts.id FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' AND posts.is_visible ORDER BY date DESC');
+
+$posts=array();
+foreach($data as $row) {
+  array_push($posts, $row);
+}
 
 if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
         //  Sanitize input to escape malicious code attemps
@@ -129,7 +110,7 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
     <script src="./vendor/tinymce/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
       tinymce.init({
-        selector: "textarea",
+        selector: "textarea#description",
         plugins: "table",
         toolbar: "code",
         menubar: false,
@@ -149,32 +130,38 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
     <div id="wrapper">
         <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
-            <form action="delete.php" method="post">
-                <input type="hidden" name="id" id="id" value="<?php echo $game['id'] ?>" />
+            <form action="delete.php?id=<?= $game['id'] ?>" method="post">
+                <input type="hidden" name="gameid" id="gameid" value="<?php echo $game['id'] ?>" />
+                <input type="hidden" name="userid" id="userid" value="<?php echo $_SESSION['id'] ?>" />
                 <fieldset>
             <div class="blog_post">
+                <div>
                 <h2><?= $game['name'] ?></h2>
+                    <input type="submit" name="Delete" value="Delete Game">
+                </div>
                 <div class="blog_content">
                     <textarea name="description" id="description" class="nonedit"><?= $game['description'] ?></textarea>
                         <img id="logo" src="./logos/<?php echo $system['logo_location']; ?>">
-                        <?php if($cover['cover_location']): ?>
-                            <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
-                        <?php endif ?>
-                        <?php if($resultPost->fetch()): ?>
-                    <?php while($post = $resultPost->fetch()): ?>
-                     <?php if($game['is_visible'] == true): ?>
+                        <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
+                    <?php if($posts): ?>
+                    <?php foreach($posts as $post): ?>
                         <p><?= $post['username'] ?></p>
                         <?php $format = 'M d, Y, g:i a';
                             echo date($format, strtotime($post['date'])); ?>
                         <p><?= $post['post'] ?></p>
-                        <a href="postedit.php?id=<?= $post['id'] ?>">Edit</a>
-
+                        <input type="hidden" name="postid" id="postid" value="<?php echo $post['id'] ?>" />
+                        <a href="postedit.php?id=<?= $post['id'] ?>">Edit</a>             
+                    <?php endforeach ?>
                     <?php endif ?>
-                    <?php endwhile ?>
-                <?php endif ?>
                 </div>
-                       <input type="submit" name="Delete" value="Hide Game">
             </div>
+                <p>
+                    <label for="post">Post a Comment</label>
+                    <textarea name="post" id="post" maxlength="1000"></textarea>
+                </p>
+                <p>
+                    <input type="submit" name="command" value="Post">
+                </p>
            </fieldset> 
         </form>
         </div>
