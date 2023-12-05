@@ -5,10 +5,7 @@ require('connect.php');
 $query = "SELECT * FROM publisher WHERE is_visible = true";
 //PDO Preparation
 $publisherSearch = $db->prepare($query);
-//Sanitize id to secure it's a number
-//$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-//Bind the parameter in the query to the variable
-//$result->bindValue('id', $id, PDO::PARAM_INT);
+
 $publisherSearch->execute();
 
 if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['description']) 

@@ -4,7 +4,7 @@ require('connect.php');
 
 if(isset($_POST['Delete'])){
     //Sanitize id to secure it's a number
-    $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+    $id = filter_input(INPUT_POST, 'gameid', FILTER_SANITIZE_NUMBER_INT);
     $delete_query = "DELETE FROM game_system WHERE game_id = :id";
     $delete = $db->prepare($delete_query);
     $delete->bindValue(':id', $id);
@@ -21,7 +21,7 @@ if(isset($_POST['Delete'])){
     }
     
     //Redirect to the page with the new information
-    header("Location: gamelistadmin.php");
+    header("Location:gamelistadmin.php");
     exit;
 }
 
@@ -115,7 +115,9 @@ foreach($data as $row) {
                 <div class="blog_content">
                     <textarea name="description" id="description" class="nonedit"><?= $game['description'] ?></textarea>
                         <img id="logo" src="./logos/<?php echo $system['logo_location']; ?>">
+                        <?php if($cover['cover_location']): ?>
                         <img id="cover" src="./covers/<?php echo $cover['cover_location']; ?>">
+                        <?php endif ?>
                     <?php if($posts): ?>
                     <?php foreach($posts as $post): ?>
                         <p><?= $post['username'] ?></p>
