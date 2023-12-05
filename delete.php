@@ -68,33 +68,6 @@ $posts=array();
 foreach($data as $row) {
   array_push($posts, $row);
 }
-
-if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
-        //  Sanitize input to escape malicious code attemps
-        $post = filter_input(INPUT_POST, 'post', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $gameId = filter_input(INPUT_POST, 'gameid', FILTER_SANITIZE_NUMBER_INT);
-        $userId = filter_input(INPUT_POST, 'userid', FILTER_SANITIZE_NUMBER_INT);
-        
-        //Query to update the values and bind parameters
-        $insert_query = "INSERT INTO posts (post, user_id, game_id, is_visible) VALUES (:post, :userId, :gameId, true)";
-        $insert = $db->prepare($insert_query);
-        $insert->bindValue(':post', $post);
-        $insert->bindValue(':gameId', $gameId);
-        $insert->bindValue(':userId', $userId);
-        
-        //  Execute the insert
-        if($insert->execute()){
-
-            echo "Success";
-            header("Location: delete.php?id=" . $gameId);
-            exit;
-        }
-
-    } else if($_POST) {
-        $id = false;
-        echo 'PLEASE ADD TITLE AND CONTENT TO THE POST';
-        exit;
-    }
 ?>
 
 <!DOCTYPE html>
@@ -155,13 +128,6 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                     <?php endif ?>
                 </div>
             </div>
-                <p>
-                    <label for="post">Post a Comment</label>
-                    <textarea name="post" id="post" maxlength="1000"></textarea>
-                </p>
-                <p>
-                    <input type="submit" name="command" value="Post">
-                </p>
            </fieldset> 
         </form>
         </div>

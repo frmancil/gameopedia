@@ -126,7 +126,6 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                     <?php endforeach ?>
                     <?php endif ?>
                 <?php if (isset($_SESSION['logged_in'])): ?>
-                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'USER'): ?>
                         <form action="game.php?id=<?= $game['id'] ?>" method="post">
                             <fieldset>
                                 <input type="hidden" name="gameid" id="gameid" value="<?php echo $game['id'] ?>" />
@@ -140,7 +139,6 @@ if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
                             </p>
                             </fieldset>
                         </form>
-                    <?php endif ?>
                 <?php endif ?>
             </div>
         </div>

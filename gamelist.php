@@ -51,11 +51,13 @@ foreach($data as $row) {
                     </select>
                     <?php endif ?>
             <div class="blog_post">
+                <?php if($_POST): ?>
                 <?php if($sorted == 'date_added'): ?>
                     <p>Sorted By Updated</p>
                     <?php else: ?>
                     <p>Sorted By <?= $sorted ?></p>
-                   <?php endif ?> 
+                   <?php endif ?>
+               <?php endif ?>
                 <?php foreach($games as $game): ?>
                     <div class="container">
                         <h2><a href="game.php?id=<?= $game['id'] ?>"><?= $game['name'] ?></a></h2>

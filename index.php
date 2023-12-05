@@ -27,7 +27,7 @@ $resultCover->execute();
 $cover = $resultCover->fetch();
 
 //Get game system
-$system = "SELECT * FROM system where id = :system_id";
+$system = "SELECT logo_location FROM system where id = :system_id";
 //PDO Preparation
 $resultSystem = $db->prepare($system);
 //Sanitize id to secure it's a number
@@ -36,6 +36,7 @@ $resultSystem->bindValue(':system_id', $cover['system_id']);
 $resultSystem->execute();
 //Fetch the selected row
 $system = $resultSystem->fetch();
+
 ?>
 
 <!DOCTYPE html>
@@ -68,6 +69,7 @@ $system = $resultSystem->fetch();
 
 <body>
     <?php include 'navigation.php'?>
+    <?php include 'verticalnav.php'?>
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
