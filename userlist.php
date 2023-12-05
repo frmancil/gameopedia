@@ -15,10 +15,7 @@ require('connect.php');
 $query = "SELECT COUNT(*) FROM users";
 //PDO Preparation
 $result = $db->prepare($query);
-//Sanitize id to secure it's a number
-//$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-//Bind the parameter in the query to the variable
-//$result->bindValue('id', $id, PDO::PARAM_INT);
+
 $result->execute();
 //Fetch the selected row
 $count = $result->fetch();
