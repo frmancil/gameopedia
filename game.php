@@ -38,13 +38,13 @@ $resultSystem->execute();
 $system = $resultSystem->fetch();
 
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-//Query to Paginate, deleted the rest of the pagination logic
-$data = $db->query('SELECT posts.post, users.username, posts.date FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' AND posts.is_visible = true ORDER BY date DESC');
+$postsQuery = 'SELECT posts.post, users.username, posts.date FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id = :id AND posts.is_visible = true ORDER BY date DESC';
+$resultPosts = $db->prepare($postsQuery);
+$resultPosts->bindValue(':id', $id);
+$resultPosts->execute();
+//Fetch the selected row
+$posts = $resultPosts->fetchAll();
 
-$posts=array();
-foreach($data as $row) {
-  array_push($posts, $row);
-}
 
 if ($_POST && isset($_POST['post']) && !empty($_POST['post'])) {
         //  Sanitize input to escape malicious code attemps

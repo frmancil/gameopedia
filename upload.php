@@ -1,4 +1,8 @@
 <?php
+
+
+    
+    function uploadImage(){
     $currentDirectory =  dirname(__FILE__);
     $uploadDirectory = "/covers/";
 
@@ -40,19 +44,31 @@
       }
 
     }
+    }
+    
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>PHP File Upload</title>
+    <meta charset="utf-8">
+    <title>Gameopedia - Cover Upload</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="./logo.png">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="main.css" type="text/css">
 </head>
 <body>
-    <form action="upload.php" method="post" enctype="multipart/form-data">
-        Upload a File:
-        <input type="file" name="the_file" id="fileToUpload">
-        <input type="submit" name="submit" value="Start Upload">
-    </form>
+    
+    <?php include 'navigation.php'?>
+    <div id="wrapper">
+        <div id="all_blogs">
+            <form action="upload.php" method="post" enctype="multipart/form-data">
+              Upload a File:
+              <input type="file" name="the_file" id="fileToUpload">
+              <input type="submit" name="submit" value="Start Upload">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

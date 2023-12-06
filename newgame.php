@@ -8,8 +8,54 @@ $publisherSearch = $db->prepare($query);
 
 $publisherSearch->execute();
 
+$systemQuery = "SELECT * FROM system";
+//PDO Preparation
+$systemSearch = $db->prepare($systemQuery);
+
+$systemSearch->execute();
+
+function uploadImage(){
+    $currentDirectory =  dirname(__FILE__);
+    $uploadDirectory = "/covers/";
+
+    $errors = []; // Store errors here
+
+    $fileExtensionsAllowed = ['jpeg','jpg','png']; // These will be the only file extensions allowed 
+
+    $fileName = $_FILES['file']['name'];
+    $fileSize = $_FILES['file']['size'];
+    $fileTmpName  = $_FILES['file']['tmp_name'];
+    $fileType = $_FILES['file']['type'];
+    $fileExtension = strtolower(end(explode('.',$fileName)));
+
+    $uploadPath = $currentDirectory . $uploadDirectory . basename($fileName); 
+
+      if (! in_array($fileExtension,$fileExtensionsAllowed)) {
+        $errors[] = "This file extension is not allowed. Please upload a JPEG or PNG file";
+      }
+
+      if ($fileSize > 4000000) {
+        $errors[] = "File exceeds maximum size (4MB)";
+      }
+
+      if (empty($errors)) {
+        $didUpload = move_uploaded_file($fileTmpName, $uploadPath);
+
+        if ($didUpload) {
+          echo "The file " . basename($fileName) . " has been uploaded";
+          header("location:gamelistadmin.php");
+        } else {
+          echo "An error occurred. Please contact the administrator.";
+        }
+      } else {
+        foreach ($errors as $error) {
+          echo $error . "These are the errors" . "\n";
+        }
+      }
+    }
+
 if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['description']) 
-    && !empty($_POST['description']) && isset($_POST['publisher']) && !empty($_POST['publisher']) && isset($_POST['year']) && !empty($_POST['year'])) {
+    && !empty($_POST['description']) && isset($_POST['publisher']) && !empty($_POST['publisher']) && isset($_POST['year']) && !empty($_POST['year']) && isset($_POST['system']) && !empty($_POST['system'])) {
         //  Sanitize input to escape malicious code attemps
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -27,15 +73,19 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
         //  Execute the insert
         if($insert->execute()){
             $last_id = $db->lastInsertId();
+            $system = filter_input(INPUT_POST, 'system', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $insert_gs = "INSERT INTO game_system (game_id, system_id) VALUES (:game_id, :system_id)";
             $insert_gs = $db->prepare($insert_gs);
             $insert_gs->bindValue(':game_id', $last_id);
-            $insert_gs->bindValue(':system_id', 5);
-            $insert_gs->execute();
+            $insert_gs->bindValue(':system_id', $system);
+            
+            if($insert_gs->execute()){
+                uploadImage();
+                echo "Success";
+                header("Location: index.php");
+                exit;
+            }
 
-            echo "Success";
-            header("Location: index.php");
-            exit;
         }
 
     } else if($_POST) {
@@ -84,14 +134,26 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                     <p>
                         <label for="publisher">Publisher</label>
                         <select name="publisher">
-                            <?php while ($post = $publisherSearch->fetch()) : ?>
-                                <option value="<?= $post['name'] ?>"><?= $post['name'] ?></option>
+                            <?php while ($publisher = $publisherSearch->fetch()) : ?>
+                                <option value="<?= $publisher['name'] ?>"><?= $publisher['name'] ?></option>
+                            <?php endwhile ?>
+                        </select>
+                    </p>
+                    <p>
+                        <label for="system">Game System</label>
+                        <select name="system">
+                            <?php while ($system = $systemSearch->fetch()) : ?>
+                                <option value="<?= $system['id'] ?>"><?= $system['name'] ?></option>
                             <?php endwhile ?>
                         </select>
                     </p>
                     <p>
                         <label for="year">Year</label>
                         <input name="year" id="year"></input>
+                    </p>
+                    <p>
+                        Upload a File:
+                        <input type="file" name="file" id="fileToUpload">
                     </p>
                     <p>
                         <input type="submit" name="command" value="Create">

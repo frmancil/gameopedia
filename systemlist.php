@@ -3,13 +3,13 @@
 require('connect.php');
 
 //Select statement to look for the specific post
-$query = "SELECT * FROM publisher";
+$query = "SELECT * FROM system";
 //PDO Preparation
 $result = $db->prepare($query);
 
 $result->execute();
 
-$publishers = $result->fetchAll();
+$systems = $result->fetchAll();
 
 ?>
 
@@ -30,8 +30,8 @@ $publishers = $result->fetchAll();
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
-                <?php foreach($publishers as $publisher): ?>
-                    <h2><a href="publisheredit.php?id=<?= $publisher['id'] ?>"><?= $publisher['name'] ?></a></h2>
+                <?php foreach($systems as $system): ?>
+                    <h2><a href="systemedit.php?id=<?= $system['id'] ?>"><?= $system['name'] ?></a></h2>
                 <?php endforeach ?>
             </div>
         </div>

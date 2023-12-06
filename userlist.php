@@ -1,37 +1,15 @@
 <?php
 
-use voku\helper\Paginator;
-
-// include the composer-autoloader
-require_once __DIR__ . '/vendor/autoload.php';
-
-// create new object pass in number of pages and identifier
-$pages = new Paginator(5, 'p');
-
 require('connect.php');
 
 //Get game data
 //Select statement to look for the specific post
-$query = "SELECT COUNT(*) FROM users";
+$query = "SELECT * FROM users";
 //PDO Preparation
 $result = $db->prepare($query);
 
 $result->execute();
-//Fetch the selected row
-$count = $result->fetch();
-
-// get number of total records
-$rowCount = $count[0];
-
-// pass number of records to
-$pages->set_total($rowCount);
-
-$data = $db->query('SELECT * FROM users' . $pages->get_limit());
-
-$users=array();
-foreach($data as $row) {
-  array_push($users, $row);
-}
+$users = $result->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -56,7 +34,6 @@ foreach($data as $row) {
                 <?php endforeach ?>
             </div>
         </div>
-        <p><?php echo $pages->page_links(); ?></p>
     </div>
 </body>
 

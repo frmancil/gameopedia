@@ -4,24 +4,22 @@ require('connect.php');
 
 if($_POST && isset($_POST['sort']) && !empty($_POST['sort'])){
 
-$data = $db->query('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id ORDER BY ' . $_POST['sort'] . '  ASC');
+$sortedQuery = 'SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id ORDER BY ' . $_POST['sort'] . '  ASC';
+$resultSort = $db->prepare($sortedQuery);
+$resultSort->execute();
+//Fetch the selected row
+$games = $resultSort->fetchAll();
 
-$games=array();
 $sorted = $_POST['sort'];
-foreach($data as $row) {
-  array_push($games, $row);
-}
 
 } else {
 
-$data = $db->query('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id');
-
-$games=array();
-foreach($data as $row) {
-  array_push($games, $row);
+$sortedQuery = ('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id');
+$resultSort = $db->prepare($sortedQuery);
+$resultSort->execute();
+//Fetch the selected row
+$games = $resultSort->fetchAll();
 }
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -64,7 +62,6 @@ foreach($data as $row) {
                         <img id="minicover" src="./covers/<?php echo $game['cover_location']; ?>">
                     <?php endif ?>
                     <a href="edit.php?id=<?= $game['id'] ?>"> Edit </a> 
-                  <!--  <h2><a href="upload.php?id=<?= $game['id'] ?>"> Add Cover </a></h2> -->
                   <hr class="double">
                 <?php endforeach ?>
             </div>

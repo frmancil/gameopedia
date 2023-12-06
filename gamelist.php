@@ -4,24 +4,22 @@ require('connect.php');
 
 if($_POST && isset($_POST['sort']) && !empty($_POST['sort'])){
 
-$data = $db->query('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id ORDER BY ' . $_POST['sort'] . '  ASC');
+$query = ('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id ORDER BY ' . $_POST['sort'] . '  ASC');
+$resultSort = $db->prepare($query);
+$resultSort->execute();
+//Fetch the selected row
+$games = $resultSort->fetchAll();
 
-$games=array();
 $sorted = $_POST['sort'];
-foreach($data as $row) {
-  array_push($games, $row);
-}
 
 } else {
 
-$data = $db->query('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id');
-
-$games=array();
-foreach($data as $row) {
-  array_push($games, $row);
+$query = ('SELECT games.id, games.name, games.publisher, games.year, game_system.cover_location FROM games INNER JOIN game_system ON games.id = game_system.game_id');
+$resultQuery = $db->prepare($query);
+$resultQuery->execute();
+//Fetch the selected row
+$games = $resultQuery->fetchAll();
 }
-}
-
 ?>
 
 <!DOCTYPE html>

@@ -5,24 +5,16 @@ require('connect.php');
 if(isset($_POST['Delete'])){
     //Sanitize id to secure it's a number
     $id = filter_input(INPUT_POST, 'gameid', FILTER_SANITIZE_NUMBER_INT);
-    $delete_query = "DELETE FROM game_system WHERE game_id = :id";
-    $delete = $db->prepare($delete_query);
-    $delete->bindValue(':id', $id);
 
-    //Execute the update
-    if($delete->execute()){
-        $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-        $delete_game_query = "DELETE FROM games WHERE id = :id";
-        $delete_game = $db->prepare($delete_game_query);
-        $delete_game->bindValue(':id', $id);
-
-        //Execute the update
-        $delete_game->execute();
-    }
-    
+    $delete_game_query = "DELETE FROM games WHERE id = :id";
+    $delete_game = $db->prepare($delete_game_query);
+    $delete_game->bindValue(':id', $id);
+            
+    $delete_game->execute();
     //Redirect to the page with the new information
     header("Location:gamelistadmin.php");
-    exit;
+    exit; 
+            
 }
 
 //Get game data
@@ -62,12 +54,13 @@ $system = $resultSystem->fetch();
 
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 //Query to Paginate, deleted the rest of the pagination logic
-$data = $db->query('SELECT posts.post, users.username, posts.date, posts.is_visible, posts.id FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =' . $id . ' AND posts.is_visible ORDER BY date DESC');
+$query = ('SELECT posts.post, users.username, posts.date, posts.is_visible, posts.id FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =:id AND posts.is_visible ORDER BY date DESC');
+$resultSort = $db->prepare($query);
+$resultSort->bindValue(':id', $id);
+$resultSort->execute();
+//Fetch the selected row
+$games = $resultSort->fetchAll();
 
-$posts=array();
-foreach($data as $row) {
-  array_push($posts, $row);
-}
 ?>
 
 <!DOCTYPE html>

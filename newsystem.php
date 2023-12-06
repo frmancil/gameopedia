@@ -10,10 +10,11 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['c
         
         //Query to update the values and bind parameters
         $insert_query = "INSERT INTO system (name, company, logo_location) VALUES (:name, :company, :logoLocation)";
+        $insert_query = "INSERT INTO system (name, company) VALUES (:name, :company)";
         $insert = $db->prepare($insert_query);
         $insert->bindValue(':name', $name);
         $insert->bindValue(':company', $company);
-        $insert->bindValue(':logoLocation', $name . '.jpg');
+        //$insert->bindValue(':logoLocation', $name . '.jpg');
         
         //  Execute the insert
         if($insert->execute()){
@@ -34,14 +35,16 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['c
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="main.css">
+    <meta charset="utf-8">
     <title>Gameopedia - New System</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="./logo.png">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="main.css" type="text/css">
 </head>
 
 <body>
+    <?php include 'navigation.php'?>
     <div id="wrapper">
         <div id="all_blogs">
             <form action="newsystem.php" method="post">
