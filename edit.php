@@ -45,6 +45,21 @@ $resultCover = $db->prepare($queryCover);
     $system = $resultSystem->fetch(); 
 }
 
+if(isset($_POST['remove'])){
+    $currentDirectory =  dirname(__FILE__);
+    $uploadDirectory = "/covers/";
+    $imgPath = $currentDirectory . $uploadDirectory . $_POST['cover'];
+    if(file_exists($imgPath)){
+        unlink($imgPath);
+        $update_id = filter_input(INPUT_POST, 'gameid', FILTER_SANITIZE_NUMBER_INT);
+        $update_cover = "UPDATE game_system SET cover_location =:cover WHERE game_id = :game_id";
+        $update_cover = $db->prepare($update_cover);
+        $update_cover->bindValue(':game_id', $update_id);
+        $update_cover->bindValue(':cover', '');
+        $update_cover->execute();
+    }
+}
+
 function uploadImage(){
     $currentDirectory =  dirname(__FILE__);
     $uploadDirectory = "/covers/";
@@ -94,16 +109,16 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
 
         if($insert->execute()){
             $system = filter_input(INPUT_POST, 'system', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $insert_gs = "UPDATE game_system SET cover_location =:cover WHERE game_id = :game_id";
-            $insert_gs = $db->prepare($insert_gs);
-            $insert_gs->bindValue(':game_id', $update_id);
+            $update_gs = "UPDATE game_system SET cover_location =:cover WHERE game_id = :game_id";
+            $update_gs = $db->prepare($update_gs);
+            $update_gs->bindValue(':game_id', $update_id);
             if(!empty($_FILES['file']['name'])){
-                $insert_gs->bindValue(':cover', $_FILES['file']['name']);
-                $insert_gs->execute();
+                $update_gs->bindValue(':cover', $_FILES['file']['name']);
+                $update_gs->execute();
                 uploadImage();
             } else {
-                $insert_gs->bindValue(':cover', '');
-                $insert_gs->execute();
+                $update_gs->bindValue(':cover', '');
+                $update_gs->execute();
                 echo "Success";
                 header("Location: gamelistadmin.php");
                 exit;
@@ -150,6 +165,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                 <fieldset>
                     <legend>Edit</legend>
                     <input type="hidden" name="gameid" id="gameid" value="<?php echo $game['id'] ?>" />
+                    <input type="hidden" name="cover" id="cover" value="<?php echo $cover['cover_location'] ?>" />
                     <p>
                         <?php if($game): ?>
                             <label for="name">Game Name</label>
@@ -189,6 +205,12 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                         Upload a File:
                         <input type="file" name="file" id="file">
                     </p>
+                    <?php if($cover['cover_location']): ?>
+                    <p>
+                        Remove a File:
+                        <input type="checkbox" id="remove" name="remove" value="remove">
+                    </p>
+                    <?php endif ?>
                     <p>
                         <input type="submit" name="command" value="Edit">
                     </p>
