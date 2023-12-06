@@ -31,7 +31,7 @@ if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repa
         //  Execute the insert
         if($insert->execute()){
             echo 'Success';
-            header("location:login.php");
+            header("location:userlist.php");
             exit;
         }
 
@@ -63,6 +63,7 @@ if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repa
 <body class="bg-light">
 <?php include 'navigation.php'?>
     <div class="container">
+        <button onclick="history.go(-1);">Back </button>
         <div class="row justify-content-center">
             <div class="col-sm-6 border shadow-lg">
             <div class="mt-5 mb-5 flex-column text-center">

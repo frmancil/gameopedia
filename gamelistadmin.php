@@ -36,9 +36,11 @@ $games = $resultSort->fetchAll();
 
 <body>
     <?php include 'navigation.php'?>
+    <?php include 'verticalnav.php'?>
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
+                <a class="nav-link link-primary" href="newgame.php">New Game</a>
                 <form action="gamelistadmin.php" method="POST">
                     <?php if($_SESSION['logged_in']): ?>
                     <select onchange="this.form.submit();" name="sort">

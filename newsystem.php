@@ -19,7 +19,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['c
         //  Execute the insert
         if($insert->execute()){
             echo "Success";
-            header("Location: index.php");
+            header("Location: systemlist.php");
             exit;
         }
 
@@ -46,6 +46,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['c
 <body>
     <?php include 'navigation.php'?>
     <div id="wrapper">
+        <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
             <form action="newsystem.php" method="post">
                 <fieldset>

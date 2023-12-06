@@ -44,30 +44,6 @@
                             <a class="nav-link link-success" href="index.php">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link link-primary" href="gamelistadmin.php">Game List</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link-primary" href="newgame.php">New Game</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link-primary" href="userlist.php">User List</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link-primary" href="usercreate.php">New User</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link-primary" href="publisher.php">New Publisher</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link-primary" href="publisherlist.php">Publisher List</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link-primary" href="newsystem.php">New System</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link-primary" href="systemlist.php">System List</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link link-primary" href="logout.php">Logout</a>
                         </li>
                         <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] == 'USER'): ?>

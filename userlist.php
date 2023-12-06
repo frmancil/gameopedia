@@ -26,9 +26,11 @@ $users = $result->fetchAll();
 
 <body>
     <?php include 'navigation.php'?>
+    <?php include 'verticalnav.php'?>
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
+                <a class="nav-link link-primary" href="usercreate.php">New User</a>
                 <?php foreach($users as $user): ?>
                     <h2><a href="useredit.php?id=<?= $user['id'] ?>"><?= $user['username'] ?></a></h2>
                 <?php endforeach ?>

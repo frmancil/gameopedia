@@ -55,11 +55,11 @@ $system = $resultSystem->fetch();
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 //Query to Paginate, deleted the rest of the pagination logic
 $query = ('SELECT posts.post, users.username, posts.date, posts.is_visible, posts.id FROM posts INNER JOIN users ON posts.user_id = users.id AND game_id =:id AND posts.is_visible ORDER BY date DESC');
-$resultSort = $db->prepare($query);
-$resultSort->bindValue(':id', $id);
-$resultSort->execute();
+$resultPost = $db->prepare($query);
+$resultPost->bindValue(':id', $id);
+$resultPost->execute();
 //Fetch the selected row
-$games = $resultSort->fetchAll();
+$posts = $resultPost->fetchAll();
 
 ?>
 

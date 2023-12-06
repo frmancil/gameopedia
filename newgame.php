@@ -82,7 +82,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
             if($insert_gs->execute()){
                 uploadImage();
                 echo "Success";
-                header("Location: index.php");
+                header("Location: gamelistadmin.php");
                 exit;
             }
 
@@ -119,6 +119,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
 <body>
     <?php include 'navigation.php'?>
     <div id="wrapper">
+        <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
             <form action="newgame.php" method="post">
                 <fieldset>

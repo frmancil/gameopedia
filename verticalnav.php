@@ -48,6 +48,20 @@ $resultSystemVer->execute();
           <a class="dropdown-item" href="browselist.php?publisher=<?= $publisher['name'] ?>"><?= $publisher['name'] ?></a>
         <?php endwhile ?>
     </li>
+    <?php if (isset($_SESSION['logged_in']) && $_SESSION['role'] == 'ADMIN'): ?>
+      <li class="nav-item">
+          <a class="nav-link link-primary" href="gamelistadmin.php">Game List</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link link-primary" href="userlist.php">User List</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link link-primary" href="publisherlist.php">Publisher List</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link link-primary" href="systemlist.php">System List</a>
+      </li>
+    <?php endif ?>
   </ul>
 </div>
 </div>

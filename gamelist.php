@@ -36,6 +36,7 @@ $games = $resultQuery->fetchAll();
 
 <body>
     <?php include 'navigation.php'?>
+    <?php include 'verticalnav.php'?>
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">

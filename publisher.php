@@ -28,7 +28,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) ) {
         //  Execute the insert
         if($insert->execute()){
             echo "Success";
-            header("Location: index.php");
+            header("Location: publisherlist.php");
             exit;
         }
 }
@@ -54,6 +54,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) ) {
 <body>
     <?php include 'navigation.php'?>
     <div id="wrapper">
+        <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
             <form action="publisher.php" method="post">
                 <fieldset>

@@ -5,7 +5,7 @@ require('connect.php');
 if(isset($_POST['Delete'])){
     //Sanitize id to secure it's a number
     $id = filter_input(INPUT_POST, 'publisherid', FILTER_SANITIZE_NUMBER_INT);
-    $delete_query = "UPDATE publisher SET is_visible = false WHERE id = :id";
+    $delete_query = "DELETE FROM publisher WHERE id = :id";
     $delete = $db->prepare($delete_query);
     $delete->bindValue(':id', $id);
 
@@ -13,24 +13,7 @@ if(isset($_POST['Delete'])){
     $delete->execute();
 
     //Redirect to the page with the new information
-    header("Location: publisheredit.php?id=" . $_POST['publisherid']);
-    exit;
-}
-
-
-
-if(isset($_POST['Undelete'])){
-    //Sanitize id to secure it's a number
-    $id = filter_input(INPUT_POST, 'publisherid', FILTER_SANITIZE_NUMBER_INT);
-    $delete_query = "UPDATE publisher SET is_visible = true WHERE id = :id";
-    $delete = $db->prepare($delete_query);
-    $delete->bindValue(':id', $id);
-
-    //Execute the update
-    $delete->execute();
-
-    //Redirect to the page with the new information
-    header("Location: publisheredit.php?id=" . $_POST['publisherid']);
+    header("Location: publisherlist.php");
     exit;
 }
 
@@ -102,11 +85,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name'])) {
                     <p>
                         <input type="submit" name="command" value="Edit">
                     </p>
-                    <?php if($publisher['is_visible'] == true): ?>
-                        <input type="submit" name="Delete" value="Hide">
-                    <?php else: ?>
-                        <input type="submit" name="Undelete" value="Unhide">
-                    <?php endif ?>
+                        <input type="submit" name="Delete" value="Delete">
                 </fieldset>
             </form>
         </div>

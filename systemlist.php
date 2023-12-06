@@ -27,9 +27,11 @@ $systems = $result->fetchAll();
 
 <body>
     <?php include 'navigation.php'?>
+    <?php include 'verticalnav.php'?>
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
+                <a class="nav-link link-primary" href="newsystem.php">New System</a>
                 <?php foreach($systems as $system): ?>
                     <h2><a href="systemedit.php?id=<?= $system['id'] ?>"><?= $system['name'] ?></a></h2>
                 <?php endforeach ?>

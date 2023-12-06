@@ -27,9 +27,11 @@ $publishers = $result->fetchAll();
 
 <body>
     <?php include 'navigation.php'?>
+    <?php include 'verticalnav.php'?>
     <div id="wrapper">
         <div id="all_blogs">
             <div class="blog_post">
+                <a class="nav-link link-primary" href="publisher.php">New Publisher</a>
                 <?php foreach($publishers as $publisher): ?>
                     <h2><a href="publisheredit.php?id=<?= $publisher['id'] ?>"><?= $publisher['name'] ?></a></h2>
                 <?php endforeach ?>

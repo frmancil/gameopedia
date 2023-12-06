@@ -91,6 +91,7 @@ if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repa
 <body class="bg-light">
 <?php include 'navigation.php'?>
     <div class="container">
+        <button onclick="history.go(-1);">Back </button>
         <div class="row justify-content-center">
             <div class="col-sm-6 border shadow-lg">
             <div class="mt-5 mb-5 flex-column text-center">
@@ -116,6 +117,7 @@ if(isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['repa
                     <?php else: ?>
                         <input type="email" class="form-control mb-4" placeholder="Enter your email" id="email" name="email">
                     <?php endif ?> 
+                    <label>Disable User</label>
                     <select name="isVisible">
                         <option value=1>True</option>
                         <option value=0>False</option>
