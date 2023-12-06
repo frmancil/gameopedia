@@ -18,25 +18,15 @@ function uploadImage(){
     $currentDirectory =  dirname(__FILE__);
     $uploadDirectory = "/covers/";
 
-    $errors = []; // Store errors here
-
-    $fileExtensionsAllowed = ['jpeg','jpg','png']; // These will be the only file extensions allowed 
-
     $fileName = $_FILES['file']['name'];
     $fileSize = $_FILES['file']['size'];
     $fileTmpName  = $_FILES['file']['tmp_name'];
     $fileType = $_FILES['file']['type'];
-    $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
 
     $uploadPath = $currentDirectory . $uploadDirectory . basename($fileName);
 
     echo $uploadPath;
 
-      if (! in_array($fileExtension,$fileExtensionsAllowed)) {
-        $errors[] = "This file extension is not allowed. Please upload a JPEG or PNG file";
-      }
-
-      if (empty($errors)) {
         $didUpload = move_uploaded_file($fileTmpName, $uploadPath);
 
         if ($didUpload) {
@@ -45,16 +35,15 @@ function uploadImage(){
         } else {
           echo "An error occurred. Please contact the administrator.";
         }
-      } else {
-        foreach ($errors as $error) {
-          echo "\n" . $error . "\n";
-        }
-      }
     }
 
 if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['description']) 
     && !empty($_POST['description']) && isset($_POST['publisher']) && !empty($_POST['publisher']) && isset($_POST['year']) && !empty($_POST['year']) && isset($_POST['system']) && !empty($_POST['system'])) {
-        //  Sanitize input to escape malicious code attemps
+
+        $fileExtensionsAllowed = ['jpeg','jpg','png'];
+        $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+        if (in_array($fileExtension,$fileExtensionsAllowed)) {
+            //  Sanitize input to escape malicious code attemps
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $publisher = filter_input(INPUT_POST, 'publisher', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -88,7 +77,9 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                 exit;
             }
         }
-
+        } else {
+            echo "This file extension is not allowed. Please upload a JPEG or PNG file";
+        }
     } else if($_POST) {
         $id = false;
         echo 'PLEASE ADD GAME INFORMATION';
