@@ -42,7 +42,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
 
         $fileExtensionsAllowed = ['jpeg','jpg','png'];
         $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        if (in_array($fileExtension,$fileExtensionsAllowed)) {
+        if (in_array($fileExtension,$fileExtensionsAllowed) || !$_FILES['file']['name']) {
             //  Sanitize input to escape malicious code attemps
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
