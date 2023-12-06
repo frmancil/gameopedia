@@ -45,9 +45,37 @@ $resultCover = $db->prepare($queryCover);
     $system = $resultSystem->fetch(); 
 }
 
+function uploadImage(){
+    $currentDirectory =  dirname(__FILE__);
+    $uploadDirectory = "/covers/";
+
+    $fileName = $_FILES['file']['name'];
+    $fileSize = $_FILES['file']['size'];
+    $fileTmpName  = $_FILES['file']['tmp_name'];
+    $fileType = $_FILES['file']['type'];
+
+    $uploadPath = $currentDirectory . $uploadDirectory . basename($fileName);
+
+    echo $uploadPath;
+
+        $didUpload = move_uploaded_file($fileTmpName, $uploadPath);
+
+        if ($didUpload) {
+          echo "The file " . basename($fileName) . " has been uploaded";
+          header("location:gamelistadmin.php");
+        } else {
+          echo "An error occurred. Please contact the administrator.";
+        }
+    }
+
 
 if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['description']) 
     && !empty($_POST['description']) && isset($_POST['publisher']) && !empty($_POST['publisher']) && isset($_POST['year']) && !empty($_POST['year'])) {
+
+        $fileExtensionsAllowed = ['jpeg','jpg','png'];
+        $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+        if (in_array($fileExtension,$fileExtensionsAllowed) || !$_FILES['file']['name']) {
+
         //  Sanitize input to escape malicious code attemps
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -64,10 +92,26 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
         $insert->bindValue(':year', $year);
         $insert->bindValue(':gameid', $update_id);
 
-        $insert->execute();
-
-        header("Location: gamelistadmin.php");
-        exit;
+        if($insert->execute()){
+            $system = filter_input(INPUT_POST, 'system', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $insert_gs = "UPDATE game_system SET cover_location =:cover WHERE game_id = :game_id";
+            $insert_gs = $db->prepare($insert_gs);
+            $insert_gs->bindValue(':game_id', $update_id);
+            if(!empty($_FILES['file']['name'])){
+                $insert_gs->bindValue(':cover', $_FILES['file']['name']);
+                $insert_gs->execute();
+                uploadImage();
+            } else {
+                $insert_gs->bindValue(':cover', '');
+                $insert_gs->execute();
+                echo "Success";
+                header("Location: gamelistadmin.php");
+                exit;
+            }
+        }
+        } else {
+            echo "This file extension is not allowed. Please upload a JPEG or PNG file";
+        }
 
     } else if($_POST) {
         $id = false;
@@ -102,7 +146,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
     <div id="wrapper">
         <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
-            <form action="edit.php" method="post">
+            <form action="edit.php" method="post" enctype="multipart/form-data">
                 <fieldset>
                     <legend>Edit</legend>
                     <input type="hidden" name="gameid" id="gameid" value="<?php echo $game['id'] ?>" />
@@ -140,6 +184,10 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                             <label for="year">Year</label>
                             <input name="year" id="year"></input>
                         <?php endif ?>
+                    </p>
+                    <p>
+                        Upload a File:
+                        <input type="file" name="file" id="file">
                     </p>
                     <p>
                         <input type="submit" name="command" value="Edit">
