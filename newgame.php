@@ -26,16 +26,14 @@ function uploadImage(){
     $fileSize = $_FILES['file']['size'];
     $fileTmpName  = $_FILES['file']['tmp_name'];
     $fileType = $_FILES['file']['type'];
-    $fileExtension = strtolower(end(explode('.',$fileName)));
+    $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
 
-    $uploadPath = $currentDirectory . $uploadDirectory . basename($fileName); 
+    $uploadPath = $currentDirectory . $uploadDirectory . basename($fileName);
+
+    echo $uploadPath;
 
       if (! in_array($fileExtension,$fileExtensionsAllowed)) {
         $errors[] = "This file extension is not allowed. Please upload a JPEG or PNG file";
-      }
-
-      if ($fileSize > 4000000) {
-        $errors[] = "File exceeds maximum size (4MB)";
       }
 
       if (empty($errors)) {
@@ -49,7 +47,7 @@ function uploadImage(){
         }
       } else {
         foreach ($errors as $error) {
-          echo $error . "These are the errors" . "\n";
+          echo "\n" . $error . "\n";
         }
       }
     }
@@ -74,18 +72,21 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
         if($insert->execute()){
             $last_id = $db->lastInsertId();
             $system = filter_input(INPUT_POST, 'system', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $insert_gs = "INSERT INTO game_system (game_id, system_id) VALUES (:game_id, :system_id)";
+            $insert_gs = "INSERT INTO game_system (game_id, system_id, cover_location) VALUES (:game_id, :system_id, :cover)";
             $insert_gs = $db->prepare($insert_gs);
             $insert_gs->bindValue(':game_id', $last_id);
             $insert_gs->bindValue(':system_id', $system);
-            
-            if($insert_gs->execute()){
+            if(!empty($_FILES['file']['name'])){
+                $insert_gs->bindValue(':cover', $_FILES['file']['name']);
+                $insert_gs->execute();
                 uploadImage();
+            } else {
+                $insert_gs->bindValue(':cover', '');
+                $insert_gs->execute();
                 echo "Success";
                 header("Location: gamelistadmin.php");
                 exit;
             }
-
         }
 
     } else if($_POST) {
@@ -121,7 +122,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
     <div id="wrapper">
         <button onclick="history.go(-1);">Back </button>
         <div id="all_blogs">
-            <form action="newgame.php" method="post">
+            <form action="newgame.php" method="post" enctype="multipart/form-data">
                 <fieldset>
                     <legend>New Game</legend>
                     <p>
@@ -154,7 +155,7 @@ if ($_POST && isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['d
                     </p>
                     <p>
                         Upload a File:
-                        <input type="file" name="file" id="fileToUpload">
+                        <input type="file" name="file" id="file">
                     </p>
                     <p>
                         <input type="submit" name="command" value="Create">
